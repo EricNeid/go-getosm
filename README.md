@@ -21,7 +21,7 @@ Software is based on <https://github.com/eclipse/sumo/blob/main/tools/osmGet.py>
 2. Download osmget
 
 ```bash
-go get -u github.com/EricNeid/go-getosm/cmd/osmget
+go install github.com/EricNeid/go-getosm/cmd/osmget@latest
 ```
 
 ## Usage
