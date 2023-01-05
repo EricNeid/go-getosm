@@ -7,16 +7,16 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
-	"time"
 )
 
-const API_URL = "https://www.overpass-api.de/api/interpreter"
+const apiURL = "https://www.overpass-api.de/api/interpreter"
 
 var (
 	bbox   string
@@ -100,26 +100,29 @@ func formatQuery(w, s, e, n float64) string {
 }
 
 func download(query string) (*[]byte, error) {
+	log.Printf("download using query: %s\n", query)
+
 	client := http.Client{
-		Timeout: 2 * time.Minute,
+		Timeout: 0, // no timeout
 	}
-	resp, err := client.Post(API_URL, "text/xml", strings.NewReader(query))
+	resp, err := client.Post(apiURL, "text/xml", strings.NewReader(query))
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	log.Println("reading response body")
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
 	if resp.StatusCode == 200 {
-		log.Println("Download complete")
+		log.Println("download complete")
 	} else {
-		fmt.Printf("Download failed with status %s\n", resp.Status)
-		fmt.Println("Response is:")
-		fmt.Println(string(body))
+		log.Printf("download failed with status %s\n", resp.Status)
+		log.Println("response is:")
+		log.Println(string(body))
 
 		return nil, errorDownload
 	}
