@@ -8,7 +8,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -49,7 +48,7 @@ func main() {
 	}
 
 	output := fmt.Sprintf("%s_bbox.osm.xml", prefix)
-	ioutil.WriteFile(output, *res, os.ModeAppend)
+	os.WriteFile(output, *res, os.ModeAppend)
 }
 
 func readBoundingBox() (w float64, s float64, e float64, n float64, err error) {
