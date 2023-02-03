@@ -23,8 +23,5 @@ jobs:
       run: |
         go mod download
 
-    - name: Build
-      run: go build -v ./cmd/osmget/
-
     - name: Test
       run: go test -v ./...
