@@ -2,4 +2,4 @@
 // SPDX-License-Identifier: BSD-3-Clause
 module github.com/EricNeid/go-getosm
 
-go 1.16
+go 1.20

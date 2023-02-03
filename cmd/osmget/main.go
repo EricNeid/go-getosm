@@ -18,8 +18,8 @@ import (
 const apiURL = "https://www.overpass-api.de/api/interpreter"
 
 var (
-	bbox   string
-	prefix string = "osm"
+	bbox   = ""
+	prefix = "osm"
 )
 
 var errorInvalidBB = errors.New("invalid bounding box given")
@@ -51,7 +51,7 @@ func main() {
 	os.WriteFile(output, *res, os.ModeAppend)
 }
 
-func readBoundingBox() (w float64, s float64, e float64, n float64, err error) {
+func readBoundingBox() (w, s, e, n float64, err error) {
 	bb := strings.Split(bbox, ",")
 	if len(bb) != 4 {
 		log.Println("invalid bounding box given: expecting w,s,e,n")

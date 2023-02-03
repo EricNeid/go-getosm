@@ -4,7 +4,8 @@ SPDX-License-Identifier: CC-BY-4.0
 -->
 <!-- markdownlint-disable MD041-->
 [![Go Report Card](https://goreportcard.com/badge/github.com/EricNeid/go-getosm?style=flat-square)](https://goreportcard.com/report/github.com/EricNeid/go-getosm)
-![Go](https://github.com/EricNeid/go-getosm/workflows/Go/badge.svg)
+![Test](https://github.com/EricNeid/go-getosm/actions/workflows/tests.yml/badge.svg)
+![Linting](https://github.com/EricNeid/go-getosm/actions/workflows/linting.yml/badge.svg)
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/EricNeid/go-getosm)
 [![Release](https://img.shields.io/github/release/EricNeid/go-getosm.svg?style=flat-square)](https://github.com/EricNeid/go-getosm/releases/latest)
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/EricNeid/go-getosm)
