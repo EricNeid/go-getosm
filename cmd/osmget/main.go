@@ -18,8 +18,10 @@ import (
 const apiURL = "https://www.overpass-api.de/api/interpreter"
 
 var (
-	bbox   = ""
-	prefix = "osm"
+	bbox         = ""
+	prefix       = "osm"
+	timeout      = 240
+	elementLimit = 1073741824
 )
 
 var errorInvalidBB = errors.New("invalid bounding box given")
@@ -31,6 +33,10 @@ func init() {
 
 	flag.StringVar(&bbox, "b", bbox, "Bounding box: west,south,east,north")
 	flag.StringVar(&prefix, "prefix", prefix, "Prefix of output file")
+
+	flag.IntVar(&timeout, "timeout", timeout, "timeout for connection")
+	flag.IntVar(&elementLimit, "elementLimit", elementLimit, "Prefix for osm xml")
+
 	flag.Parse()
 }
 
@@ -42,6 +48,7 @@ func main() {
 	}
 
 	query := formatQuery(w, s, e, n)
+
 	res, err := download(query)
 	if err != nil {
 		log.Fatal(err)
@@ -82,7 +89,7 @@ func readBoundingBox() (w, s, e, n float64, err error) {
 
 func formatQuery(w, s, e, n float64) string {
 	return fmt.Sprintf(`
-	<osm-script timeout="240" element-limit="1073741824">
+	<osm-script timeout="%d" element-limit="%d">
 	<union>
 		<bbox-query n="%f" s="%f" w="%f" e="%f"/>
 		<recurse type="node-relation" into="rels"/>
@@ -95,7 +102,7 @@ func formatQuery(w, s, e, n float64) string {
 	</union>
 	<print mode="body"/>
 	</osm-script>
-	`, n, s, w, e)
+	`, timeout, elementLimit, n, s, w, e)
 }
 
 func download(query string) (*[]byte, error) {
