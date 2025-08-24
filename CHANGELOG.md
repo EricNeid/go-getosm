@@ -8,6 +8,9 @@ SPDX-License-Identifier: CC-BY-4.0
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+### Added
+* Automatic retry if error occurs during download
+
 ## 0.2.0 - 2023-01-05
 ### Added
 * Additional log messages for debugging
