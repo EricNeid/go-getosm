@@ -34,7 +34,7 @@ func init() {
 	flag.StringVar(&prefix, "prefix", prefix, "Prefix of output file")
 
 	flag.IntVar(&timeout, "timeout", timeout, "timeout for connection")
-	flag.IntVar(&elementLimit, "elementLimit", elementLimit, "Prefix for osm xml")
+	flag.IntVar(&elementLimit, "elementLimit", elementLimit, "Element limit in osm file")
 
 	flag.Parse()
 }

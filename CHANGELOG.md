@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 ### Added
 * Automatic retry if error occurs during download
+### Fixed
+* Wrong description in help page
 
 ## 0.2.0 - 2023-01-05
 ### Added
