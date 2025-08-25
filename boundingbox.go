@@ -1,40 +1,59 @@
-package main
+package gogetosm
 
 import (
+	"errors"
 	"log"
 	"strconv"
 	"strings"
 )
 
-type boundingBox struct {
+var ErrorInvalidBB = errors.New("invalid bounding box given")
+
+type BoundingBox struct {
 	w, s, e, n float64
 }
 
-func readBoundingBox(bbString string) (bb boundingBox, err error) {
+func ReadBoundingBox(bbString string, tiles int) (bbs []BoundingBox, err error) {
 	bbStrParts := strings.Split(bbString, ",")
 	if len(bbStrParts) != 4 {
 		log.Println("invalid bounding box given: expecting w,s,e,n")
-		return bb, errorInvalidBB
+		return bbs, ErrorInvalidBB
 	}
 	w, err := strconv.ParseFloat(bbStrParts[0], 64)
 	if err != nil {
 		log.Printf("could not parse west %s\n", bbStrParts[0])
-		return bb, errorInvalidBB
+		return bbs, ErrorInvalidBB
 	}
 	s, err := strconv.ParseFloat(bbStrParts[1], 64)
 	if err != nil {
 		log.Printf("could not parse south %s\n", bbStrParts[1])
-		return bb, errorInvalidBB
+		return bbs, ErrorInvalidBB
 	}
 	e, err := strconv.ParseFloat(bbStrParts[2], 64)
 	if err != nil {
 		log.Printf("could not parse east %s\n", bbStrParts[2])
-		return bb, errorInvalidBB
+		return bbs, ErrorInvalidBB
 	}
 	n, err := strconv.ParseFloat(bbStrParts[3], 64)
 	if err != nil {
 		log.Printf("could not parse north %s\n", bbStrParts[3])
-		return bb, errorInvalidBB
+		return bbs, ErrorInvalidBB
 	}
-	return boundingBox{w, s, e, n}, nil
+
+	if tiles == 1 {
+		return []BoundingBox{{w, s, e, n}}, nil
+	}
+
+	slidingWest := w
+	for i := 0; i < tiles; i++ {
+		e = slidingWest + (e-w)/float64(tiles)
+		bbs = append(bbs, BoundingBox{
+			w: slidingWest,
+			s: s,
+			e: e,
+			n: n,
+		})
+		slidingWest = e
+	}
+	return bbs, nil
 }

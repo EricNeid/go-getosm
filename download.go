@@ -1,6 +1,7 @@
-package main
+package gogetosm
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -8,7 +9,9 @@ import (
 	"strings"
 )
 
-func formatQuery(bb boundingBox) string {
+var ErrorDownload = errors.New("could not retrieve data")
+
+func FormatQuery(bb BoundingBox, timeout, elementLimit int) string {
 	return fmt.Sprintf(`
 	<osm-script timeout="%d" element-limit="%d">
 	<union>
@@ -26,7 +29,7 @@ func formatQuery(bb boundingBox) string {
 	`, timeout, elementLimit, bb.n, bb.s, bb.w, bb.e)
 }
 
-func download(query string) (*[]byte, error) {
+func Download(apiURL, query string) (*[]byte, error) {
 	log.Printf("download using query: %s\n", query)
 	client := http.Client{
 		Timeout: 0, // no timeout
@@ -49,7 +52,7 @@ func download(query string) (*[]byte, error) {
 		log.Printf("download failed with status %s\n", resp.Status)
 		log.Println("response is:")
 		log.Println(string(body))
-		return nil, errorDownload
+		return nil, ErrorDownload
 	}
 
 	return &body, err

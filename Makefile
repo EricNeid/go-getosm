@@ -3,10 +3,11 @@
 
 DIR := ${CURDIR}
 GO_IMAGE := golang:1.20.0-alpine
+DOCKER := podman
 
 .PHONY: build-windows
 build-windows:
-	docker run -it --rm \
+	${DOCKER} run -it --rm \
 		-e GOOS=windows \
 		-e GOARCH=amd64 \
 		-w /app -v ${DIR}:/app \
@@ -16,7 +17,7 @@ build-windows:
 
 .PHONY: build-linux
 build-linux:
-	docker run -it --rm \
+	${DOCKER} run -it --rm \
 		-e GOOS=linux \
 		-e GOARCH=amd64 \
 		-w /app -v ${DIR}:/app \
@@ -26,7 +27,7 @@ build-linux:
 
 .PHONY: test
 test:
-	docker run -it --rm \
+	${DOCKER} run -it --rm \
 		-w /app -v ${DIR}:/app \
 		${GO_IMAGE} \
 		go test ./...
@@ -34,7 +35,7 @@ test:
 
 .PHONY: lint
 lint:
-	docker run -it --rm \
+	${DOCKER} run -it --rm \
 		-e CGO_ENABLED=0 \
 		-w /app -v ${DIR}:/app \
 		golangci/golangci-lint:v1.50.1 \

@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 ### Added
+* Option to tile alrge files
 * Automatic retry if error occurs during download
 ### Fixed
 * Wrong description in help page
