@@ -75,10 +75,10 @@ func main() {
 		}
 		if len(bbs) > 1 {
 			output := fmt.Sprintf("%s%d_%d.osm.xml", prefix, i, len(bbs))
-			os.WriteFile(output, *result, os.ModeAppend)
+			os.WriteFile(output, *result, os.ModePerm)
 		} else {
 			output := fmt.Sprintf("%s_bbox.osm.xml", prefix)
-			os.WriteFile(output, *result, os.ModeAppend)
+			os.WriteFile(output, *result, os.ModePerm)
 		}
 	}
 
