@@ -11,6 +11,7 @@ import (
 	"time"
 
 	getosm "github.com/EricNeid/go-getosm"
+	"github.com/op/go-logging"
 )
 
 const apiURL = "https://www.overpass-api.de/api/interpreter"
@@ -23,6 +24,7 @@ var (
 	prefix       = "osm"
 	timeout      = 240
 	elementLimit = 1073741824
+	verbose      = false
 )
 
 func init() {
@@ -34,6 +36,7 @@ func init() {
 	flag.IntVar(&tiles, "t", tiles, "Number of tiles to split the bounding box into")
 	flag.IntVar(&timeout, "timeout", timeout, "timeout for connection")
 	flag.IntVar(&elementLimit, "elementLimit", elementLimit, "Element limit in osm file")
+	flag.BoolVar(&verbose, "verbose", verbose, "Verbose output")
 
 	flag.Parse()
 }
@@ -45,6 +48,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	if verbose {
+		getosm.SetLogLevel(logging.DEBUG)
+	} else {
+		getosm.SetLogLevel(logging.INFO)
+	}
+
 	bbs, err := getosm.ReadBoundingBox(bbox, tiles)
 	if err != nil {
 		flag.Usage()
@@ -52,6 +61,8 @@ func main() {
 	}
 
 	for i, bb := range bbs {
+		log.Printf("downloading tiles %d of %d\n", i+1, len(bbs))
+
 		query := getosm.FormatQuery(bb, timeout, elementLimit)
 		result, err := getosm.Download(apiURL, query)
 		for retry := 1; err != nil && retry <= maxRetries; retry++ {
@@ -70,4 +81,6 @@ func main() {
 			os.WriteFile(output, *result, os.ModeAppend)
 		}
 	}
+
+	log.Println("all done")
 }

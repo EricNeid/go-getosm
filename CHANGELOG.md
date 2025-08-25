@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 * Option to tile alrge files
 * Automatic retry if error occurs during download
+* Options to disable/enable verbose logging
 ### Fixed
 * Wrong description in help page
 

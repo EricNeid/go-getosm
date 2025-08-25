@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -30,7 +29,7 @@ func FormatQuery(bb BoundingBox, timeout, elementLimit int) string {
 }
 
 func Download(apiURL, query string) (*[]byte, error) {
-	log.Printf("download using query: %s\n", query)
+	log.Debugf("download using query: %s\n", query)
 	client := http.Client{
 		Timeout: 0, // no timeout
 	}
@@ -40,18 +39,17 @@ func Download(apiURL, query string) (*[]byte, error) {
 	}
 	defer resp.Body.Close()
 
-	log.Println("reading response body")
+	log.Debugf("reading response body")
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
 	if resp.StatusCode == 200 {
-		log.Println("download complete")
+		log.Debugf("download complete")
 	} else {
-		log.Printf("download failed with status %s\n", resp.Status)
-		log.Println("response is:")
-		log.Println(string(body))
+		log.Errorf("download failed with status %s\n", resp.Status)
+		log.Errorf("response is: \n%s\n", string(body))
 		return nil, ErrorDownload
 	}
 
