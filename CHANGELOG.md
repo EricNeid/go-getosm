@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 ### Fixed
+* Naming of tile files starts with 1
+
+## 0.3.1 - 2025-08-26
+### Fixed
 * Query not completely printed
 * Error in tiling
 ### Added
