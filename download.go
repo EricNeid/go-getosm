@@ -14,7 +14,7 @@ func FormatQuery(bb BoundingBox, timeout, elementLimit int) string {
 	return fmt.Sprintf(`
 	<osm-script timeout="%d" element-limit="%d">
 	<union>
-		<bbox-query n="%f" s="%f" w="%f" e="%f"/>
+		<bbox-query n="%g" s="%g" w="%g" e="%g"/>
 		<recurse type="node-relation" into="rels"/>
 		<recurse type="node-way"/>
 		<recurse type="way-relation"/>
