@@ -78,7 +78,7 @@ func main() {
 			log.Fatalf("error downloading data: %v, maximum retries reached\n", err)
 		}
 		if len(bbs) > 1 {
-			output := fmt.Sprintf("%s%d_%d.osm.xml", prefix, i, len(bbs))
+			output := fmt.Sprintf("%s%d_%d.osm.xml", prefix, i+1, len(bbs))
 			os.WriteFile(output, *result, os.ModePerm)
 		} else {
 			output := fmt.Sprintf("%s_bbox.osm.xml", prefix)
