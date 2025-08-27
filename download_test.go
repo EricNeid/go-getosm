@@ -11,10 +11,10 @@ import (
 func TestFormatQuery(t *testing.T) {
 	// arrange
 	bb := BoundingBox{
-		n: 52.35211857272093,
-		s: 52.29189255277229,
-		w: 13.16848754882812,
-		e: 13.27835083007812,
+		North: 52.35211857272093,
+		South: 52.29189255277229,
+		West:  13.16848754882812,
+		East:  13.27835083007812,
 	}
 	// action
 	result := FormatQuery(bb, 240, 1073741824)

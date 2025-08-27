@@ -25,7 +25,7 @@ func FormatQuery(bb BoundingBox, timeout, elementLimit int) string {
 	</union>
 	<print mode="body"/>
 	</osm-script>
-	`, timeout, elementLimit, bb.n, bb.s, bb.w, bb.e)
+	`, timeout, elementLimit, bb.North, bb.South, bb.West, bb.East)
 }
 
 func Download(apiURL, query string) (*[]byte, error) {

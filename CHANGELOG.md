@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 ### Fixed
 * Query not completely printed
+* Error in tiling
 ### Added
 * Paramter q to print query
 

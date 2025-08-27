@@ -7,6 +7,7 @@ package verify
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"path/filepath"
 	"reflect"
 	"runtime"
@@ -40,6 +41,17 @@ func Equals(t *testing.T, exp, act any) {
 	t.Helper()
 
 	if !deepEqual(exp, act) {
+		_, file, line, _ := runtime.Caller(1)
+		fmt.Printf("%s:%d:\n\n\texp: %#v\n\n\tgot: %#v\n\n", filepath.Base(file), line, exp, act)
+		t.FailNow()
+	}
+}
+
+// Equals fails the test if exp is not almost equal to act.
+func AlmostEquals(t *testing.T, exp, act float64) {
+	t.Helper()
+
+	if math.Abs(exp-act) > 0.000000001 {
 		_, file, line, _ := runtime.Caller(1)
 		fmt.Printf("%s:%d:\n\n\texp: %#v\n\n\tgot: %#v\n\n", filepath.Base(file), line, exp, act)
 		t.FailNow()

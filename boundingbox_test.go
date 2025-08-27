@@ -14,6 +14,12 @@ func TestReadBoundingBox(t *testing.T) {
 	// verify
 	verify.Ok(t, err)
 	verify.Equals(t, 2, len(bbs))
-	verify.Equals(t, BoundingBox{10.4, 50.0, 10.6, 51.0}, bbs[0])
-	verify.Equals(t, BoundingBox{10.4, 50.0, 10.8, 51.0}, bbs[1])
+	verify.AlmostEquals(t, 51.0, bbs[0].North)
+	verify.AlmostEquals(t, 51.0, bbs[1].North)
+	verify.AlmostEquals(t, 50.0, bbs[0].South)
+	verify.AlmostEquals(t, 50.0, bbs[1].South)
+	verify.AlmostEquals(t, 10.4, bbs[0].West)
+	verify.AlmostEquals(t, 10.6, bbs[0].East)
+	verify.AlmostEquals(t, 10.6, bbs[1].West)
+	verify.AlmostEquals(t, 10.8, bbs[1].East)
 }

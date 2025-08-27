@@ -9,7 +9,7 @@ import (
 var ErrorInvalidBB = errors.New("invalid bounding box given")
 
 type BoundingBox struct {
-	w, s, e, n float64
+	West, South, East, North float64
 }
 
 func ReadBoundingBox(bbString string, tiles int) (bbs []BoundingBox, err error) {
@@ -43,14 +43,15 @@ func ReadBoundingBox(bbString string, tiles int) (bbs []BoundingBox, err error) 
 		return []BoundingBox{{w, s, e, n}}, nil
 	}
 
+	tileWidth := (e - w) / float64(tiles)
 	slidingWest := w
 	for i := 0; i < tiles; i++ {
-		e = slidingWest + (e-w)/float64(tiles)
+		e = slidingWest + tileWidth
 		bbs = append(bbs, BoundingBox{
-			w: slidingWest,
-			s: s,
-			e: e,
-			n: n,
+			West:  slidingWest,
+			South: s,
+			East:  e,
+			North: n,
 		})
 		slidingWest = e
 	}
