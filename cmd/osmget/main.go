@@ -25,6 +25,7 @@ var (
 	timeout      = 240
 	elementLimit = 1073741824
 	verbose      = false
+	queryOutput  = false
 )
 
 func init() {
@@ -37,6 +38,7 @@ func init() {
 	flag.IntVar(&timeout, "timeout", timeout, "timeout for connection")
 	flag.IntVar(&elementLimit, "elementLimit", elementLimit, "Element limit in osm file")
 	flag.BoolVar(&verbose, "verbose", verbose, "Verbose output")
+	flag.BoolVar(&queryOutput, "q", queryOutput, "Query output")
 
 	flag.Parse()
 }
@@ -62,8 +64,10 @@ func main() {
 
 	for i, bb := range bbs {
 		log.Printf("downloading tiles %d of %d\n", i+1, len(bbs))
-
 		query := getosm.FormatQuery(bb, timeout, elementLimit)
+		if queryOutput {
+			log.Printf("download using query %s\n", query)
+		}
 		result, err := getosm.Download(apiURL, query)
 		for retry := 1; err != nil && retry <= maxRetries; retry++ {
 			log.Printf("error downloading data: %v, attempting retry %d of %d in %s seconds\n", err, retry, maxRetries, retryDelay)

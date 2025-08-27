@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 ### Fixed
 * Query not completely printed
+### Added
+* Paramter q to print query
 
 ## 0.3.0 - 2025-08-25
 ### Added
