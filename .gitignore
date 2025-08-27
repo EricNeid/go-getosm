@@ -3,3 +3,5 @@
 *.exe
 out
 *.osm.xml
+.vscode/launch.json
+tmp/
