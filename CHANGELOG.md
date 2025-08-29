@@ -8,8 +8,15 @@ SPDX-License-Identifier: CC-BY-4.0
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+## 0.3.2 - 2025-08-29
 ### Fixed
 * Naming of tile files starts with 1
+### Removed
+* Argument q to print query, because it is obsolet by verbose
+### Adedd
+* Print generated files after download
+### Misc
+* Cleanup
 
 ## 0.3.1 - 2025-08-26
 ### Fixed

@@ -15,27 +15,27 @@ type BoundingBox struct {
 func ReadBoundingBox(bbString string, tiles int) (bbs []BoundingBox, err error) {
 	bbStrParts := strings.Split(bbString, ",")
 	if len(bbStrParts) != 4 {
-		log.Errorf("invalid bounding box given: expecting w,s,e,n")
+		Log.Errorf("invalid bounding box given: expecting w,s,e,n")
 		return bbs, ErrorInvalidBB
 	}
 	w, err := strconv.ParseFloat(bbStrParts[0], 64)
 	if err != nil {
-		log.Errorf("could not parse west %s\n", bbStrParts[0])
+		Log.Errorf("could not parse west %s\n", bbStrParts[0])
 		return bbs, ErrorInvalidBB
 	}
 	s, err := strconv.ParseFloat(bbStrParts[1], 64)
 	if err != nil {
-		log.Errorf("could not parse south %s\n", bbStrParts[1])
+		Log.Errorf("could not parse south %s\n", bbStrParts[1])
 		return bbs, ErrorInvalidBB
 	}
 	e, err := strconv.ParseFloat(bbStrParts[2], 64)
 	if err != nil {
-		log.Errorf("could not parse east %s\n", bbStrParts[2])
+		Log.Errorf("could not parse east %s\n", bbStrParts[2])
 		return bbs, ErrorInvalidBB
 	}
 	n, err := strconv.ParseFloat(bbStrParts[3], 64)
 	if err != nil {
-		log.Errorf("could not parse north %s\n", bbStrParts[3])
+		Log.Errorf("could not parse north %s\n", bbStrParts[3])
 		return bbs, ErrorInvalidBB
 	}
 
