@@ -15,16 +15,16 @@ import (
 )
 
 const apiURL = "https://www.overpass-api.de/api/interpreter"
-const retryDelay = 2 * time.Second
 
 var (
-	bbox         = ""
-	tiles        = 1
-	prefix       = "osm"
-	timeout      = 240
-	elementLimit = 1073741824
-	verbose      = false
-	retries      = 5
+	bbox          = ""
+	tiles         = 1
+	prefix        = "osm"
+	timeout       = 240
+	elementLimit  = 1073741824
+	verbose       = false
+	retries       = 5
+	retryDelaySec = 2
 )
 
 func init() {
@@ -33,6 +33,7 @@ func init() {
 	flag.IntVar(&tiles, "t", tiles, "Number of tiles to split the bounding box into")
 	flag.IntVar(&timeout, "timeout", timeout, "timeout for connection")
 	flag.IntVar(&retries, "retries", retries, "how often to retry the download of a failed tile")
+	flag.IntVar(&retryDelaySec, "retryDelay", retryDelaySec, "delay between retries in seconds")
 	flag.IntVar(&elementLimit, "elementLimit", elementLimit, "Element limit in osm file")
 	flag.BoolVar(&verbose, "verbose", verbose, "Verbose output")
 
@@ -65,6 +66,8 @@ func main() {
 		log.Infof("downloading tiles %d of %d\n", i+1, len(bbs))
 		query := app.FormatQuery(bb, timeout, elementLimit)
 		result, err := app.Download(apiURL, query)
+
+		retryDelay := time.Duration(retryDelaySec) * time.Second
 		for retry := 1; err != nil && retry <= retries; retry++ {
 			log.Warningf("error downloading data: %v, attempting retry %d of %d in %s seconds\n", err, retry, retries, retryDelay)
 			result, err = app.Download(apiURL, query)

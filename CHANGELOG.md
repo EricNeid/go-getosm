@@ -8,6 +8,10 @@ SPDX-License-Identifier: CC-BY-4.0
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+## 0.5.0 - 2025-10-29
+### Added
+* Option retryDelaySec to set the delay between 2 retries
+
 ## 0.4.0 - 2025-10-29
 ### Added
 * Option to adjust retry limit
