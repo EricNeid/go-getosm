@@ -34,10 +34,18 @@ osmget -b 13.168487548828123,52.29189255277229,13.278350830078125,52.35211857272
 osmget -b 13.168487548828123,52.29189255277229,13.278350830078125,52.35211857272093 -t 4 -verbose -continue
 ```
 
-Display options:
+Options:
 
 ```bash
-osmget -h
+osmget -prefix osm2025q3 # prepend downloaded tiles with given label
+osmget -t 2              # split output into multiple tiles
+osmget -timeout 10       # connection timeout
+osmget -retries 10       # retry failed tile download
+osmget -retryDelay 5     # wait this many seconds before retry download
+osmget -elementLimit 5   # element limit in osm file
+osmget -verbose          # extra debug output
+osmget -continue         # skip already downloaded files
+osmget -h                # print usage
 ```
 
 ## Question or comments
