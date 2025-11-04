@@ -14,7 +14,10 @@ import (
 	"github.com/op/go-logging"
 )
 
-const apiURL = "https://www.overpass-api.de/api/interpreter"
+const (
+	version = "0.5.0"
+	apiURL  = "https://www.overpass-api.de/api/interpreter"
+)
 
 var (
 	bbox               = ""
@@ -29,6 +32,15 @@ var (
 )
 
 func parseArguments() {
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+		fmt.Printf("Version: %s\n", version)
+		flag.PrintDefaults()
+
+		fmt.Printf("  Usage  : %s -b w,s,e,n\n", os.Args[0])
+		fmt.Printf("  Example: %s -b 13.10,52.20,13.20,52.30 -t 4 -verbose\n", os.Args[0])
+	}
+
 	flag.StringVar(&bbox, "b", bbox, "Bounding box: west,south,east,north")
 	flag.StringVar(&prefix, "prefix", prefix, "Prefix of output file")
 	flag.IntVar(&tiles, "t", tiles, "Number of tiles to split the bounding box into")
