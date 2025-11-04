@@ -106,6 +106,7 @@ func main() {
 }
 
 func doesFileExists(file string) bool {
+	log.Debugf("check if file is already present %s\n", file)
 	stats, err := os.Stat(file)
 	if os.IsNotExist(err) {
 		return false
