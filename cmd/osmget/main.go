@@ -17,17 +17,18 @@ import (
 const apiURL = "https://www.overpass-api.de/api/interpreter"
 
 var (
-	bbox          = ""
-	tiles         = 1
-	prefix        = "osm"
-	timeout       = 240
-	elementLimit  = 1073741824
-	verbose       = false
-	retries       = 5
-	retryDelaySec = 2
+	bbox               = ""
+	tiles              = 1
+	prefix             = "osm"
+	timeout            = 240
+	elementLimit       = 1073741824
+	verbose            = false
+	retries            = 5
+	retryDelaySec      = 10
+	continueLastFailed = false
 )
 
-func init() {
+func parseArguments() {
 	flag.StringVar(&bbox, "b", bbox, "Bounding box: west,south,east,north")
 	flag.StringVar(&prefix, "prefix", prefix, "Prefix of output file")
 	flag.IntVar(&tiles, "t", tiles, "Number of tiles to split the bounding box into")
@@ -36,18 +37,21 @@ func init() {
 	flag.IntVar(&retryDelaySec, "retryDelay", retryDelaySec, "delay between retries in seconds")
 	flag.IntVar(&elementLimit, "elementLimit", elementLimit, "Element limit in osm file")
 	flag.BoolVar(&verbose, "verbose", verbose, "Verbose output")
+	flag.BoolVar(&continueLastFailed, "continue", continueLastFailed, "Do not download already present tiles")
 
 	flag.Parse()
-}
 
-var log = app.Log
-
-func main() {
 	if tiles < 1 {
 		log.Infof("invalid number of tiles given, must be >= 1\n")
 		flag.Usage()
 		os.Exit(1)
 	}
+}
+
+var log = app.Log
+
+func main() {
+	parseArguments()
 
 	if verbose {
 		app.SetLogLevel(logging.DEBUG)
@@ -61,12 +65,27 @@ func main() {
 		os.Exit(1)
 	}
 
-	var output []string
+	var outputFiles []string
 	for i, bb := range bbs {
 		log.Infof("downloading tiles %d of %d\n", i+1, len(bbs))
+
+		// output file name
+		var outputFile string
+		if len(bbs) > 1 {
+			outputFile = fmt.Sprintf("%s%d_%d.osm.xml", prefix, i+1, len(bbs))
+		} else {
+			outputFile = fmt.Sprintf("%s_bbox.osm.xml", prefix)
+		}
+
+		// check if file alreads exits
+		if continueLastFailed && doesFileExists(outputFile) {
+			log.Infof("skipping already present tile %s\n", outputFile)
+			continue
+		}
+
+		// download tile until retries are exhausted
 		query := app.FormatQuery(bb, timeout, elementLimit)
 		result, err := app.Download(apiURL, query)
-
 		retryDelay := time.Duration(retryDelaySec) * time.Second
 		for retry := 1; err != nil && retry <= retries; retry++ {
 			log.Warningf("error downloading data: %v, attempting retry %d of %d in %s seconds\n", err, retry, retries, retryDelay)
@@ -77,16 +96,26 @@ func main() {
 			log.Fatalf("error downloading data: %v, maximum retries reached\n", err)
 		}
 
-		var outputFile string
-		if len(bbs) > 1 {
-			outputFile = fmt.Sprintf("%s%d_%d.osm.xml", prefix, i+1, len(bbs))
-		} else {
-			outputFile = fmt.Sprintf("%s_bbox.osm.xml", prefix)
-		}
+		// create output
 		os.WriteFile(outputFile, *result, os.ModePerm)
-		output = append(output, outputFile)
+		outputFiles = append(outputFiles, outputFile)
 	}
 
 	log.Infof("all done")
-	log.Infof("files created: %s\n", strings.Join(output, ","))
+	log.Infof("files created: %s\n", strings.Join(outputFiles, ","))
+}
+
+func doesFileExists(file string) bool {
+	log.Debugf("check if file is already present %s\n", file)
+	stats, err := os.Stat(file)
+	if os.IsNotExist(err) {
+		return false
+	}
+	if err != nil {
+		return false
+	}
+	if stats.Size() == 0 {
+		return false
+	}
+	return true
 }
