@@ -8,7 +8,8 @@ SPDX-License-Identifier: CC-BY-4.0
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
-* Option: continue to avoid redownloading already present tiles
+### 0.6.0 - 2025-11-04
+* Option: to skip already downloaded tiles
 
 ## 0.5.0 - 2025-10-29
 ### Added
