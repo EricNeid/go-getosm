@@ -17,15 +17,15 @@ import (
 const apiURL = "https://www.overpass-api.de/api/interpreter"
 
 var (
-	bbox             = ""
-	tiles            = 1
-	prefix           = "osm"
-	timeout          = 240
-	elementLimit     = 1073741824
-	verbose          = false
-	retries          = 5
-	retryDelaySec    = 10
-	continueOnFailed = false
+	bbox               = ""
+	tiles              = 1
+	prefix             = "osm"
+	timeout            = 240
+	elementLimit       = 1073741824
+	verbose            = false
+	retries            = 5
+	retryDelaySec      = 10
+	continueLastFailed = false
 )
 
 func parseArguments() {
@@ -37,7 +37,7 @@ func parseArguments() {
 	flag.IntVar(&retryDelaySec, "retryDelay", retryDelaySec, "delay between retries in seconds")
 	flag.IntVar(&elementLimit, "elementLimit", elementLimit, "Element limit in osm file")
 	flag.BoolVar(&verbose, "verbose", verbose, "Verbose output")
-	flag.BoolVar(&continueOnFailed, "continue", continueOnFailed, "Do not download already present tiles")
+	flag.BoolVar(&continueLastFailed, "continue", continueLastFailed, "Do not download already present tiles")
 
 	flag.Parse()
 
@@ -78,6 +78,10 @@ func main() {
 		}
 
 		// check if file alreads exits
+		if continueLastFailed && doesFileExists(outputFile) {
+			log.Infof("skipping already present tile %s\n", outputFile)
+			continue
+		}
 
 		// download tile until retries are exhausted
 		query := app.FormatQuery(bb, timeout, elementLimit)
