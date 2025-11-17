@@ -1,7 +1,3 @@
-<!--
-SPDX-FileCopyrightText: 2021 Eric Neidhardt
-SPDX-License-Identifier: CC-BY-4.0
--->
 <!-- markdownlint-disable MD041-->
 [![Go Report Card](https://goreportcard.com/badge/github.com/EricNeid/go-getosm?style=flat-square)](https://goreportcard.com/report/github.com/EricNeid/go-getosm)
 ![Test](https://github.com/EricNeid/go-getosm/actions/workflows/tests.yml/badge.svg)
@@ -13,7 +9,7 @@ SPDX-License-Identifier: CC-BY-4.0
 # About
 
 A simple downloader for OSM xml data, using <https://www.overpass-api.de>.
-Software is based on <https://github.com/eclipse/sumo/blob/main/tools/osmGet.py>
+Software is inspired from <https://github.com/eclipse/sumo/blob/main/tools/osmGet.py> (EPL-2.0-lizenzierte Software).
 
 ## Quickstart
 
@@ -52,3 +48,8 @@ osmget -h                # print usage
 
 Please feel free to open a new issue:
 <https://github.com/EricNeid/go-getosm/issues>
+
+## Acknowledgements
+
+This project was inspired by the `osmGet.py` script from the SUMO project 
+(https://github.com/eclipse-sumo/sumo). SUMO is licensed under the Eclipse Public License 2.0.

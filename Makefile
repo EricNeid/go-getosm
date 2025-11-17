@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: 2021 Eric Neidhardt
-# SPDX-License-Identifier: CC0-1.0
-
 DIR := ${CURDIR}
 GO_IMAGE := golang:1.20.0-alpine
 DOCKER := podman

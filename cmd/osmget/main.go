@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: Copyright (C) 2009-2021 German Aerospace Center (DLR) and others.
-// SPDX-FileCopyrightText: 2021 Eric Neidhardt
-// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2021 Eric Neidhardt
+// Inspired by SUMO's osmGet.py (no code copied).
 package main
 
 import (

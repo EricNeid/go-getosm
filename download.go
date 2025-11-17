@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2021 Eric Neidhardt
+// Inspired by SUMO's osmGet.py (no code copied).
 package gogetosm
 
 import (
@@ -23,7 +26,7 @@ func FormatQuery(bb BoundingBox, timeout, elementLimit int) string {
 		<item/>
 		<recurse type="way-node"/>
 	</union>
-	<print mode="body"/>
+	<print/>
 	</osm-script>
 	`, timeout, elementLimit, bb.North, bb.South, bb.West, bb.East)
 }

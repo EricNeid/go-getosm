@@ -1,13 +1,22 @@
-# License
+# NOTICE
 
-Copyright © 2021 Eric Neidhardt
+This project is distributed under the MIT License.
+See the LICENSE file for details.
 
-This work is licensed under multiple licenses:
+## Attribution
 
-- The source code and the accompanying material are licensed under [EPL-2.0](LICENSES/EPL-2.0.txt) OR [GPL-2.0-or-later](LICENSES/GPL-2.0-or-later.txt).
-- The documentation filese are licensed under [CC-BY-4.0](LICENSES/CC-BY-4.0.txt).
-- Insignificant files are licensed under [CC0-1.0](LICENSES/CC0-1.0.txt).
+This project includes an original Go implementation inspired by the
+`osmGet.py` tool from the SUMO (Simulation of Urban Mobility) project.
 
-Please see the individual files for more accurate information.
+- Original project: https://github.com/eclipse-sumo/sumo
+- SUMO license: Eclipse Public License 2.0 (EPL-2.0)
 
-> **Hint:** Copyright and license information are provided in accordance to the [REUSE Specification 3.0](https://reuse.software/spec/).
+No source code from the SUMO project was copied or translated.
+Only the general idea and workflow were used as inspiration.
+
+## Third-Party Services
+
+This project interacts with the Overpass API for downloading OSM data:
+
+- Overpass API: https://overpass-api.de/
+- OpenStreetMap data © OpenStreetMap contributors (ODbL)

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2021 Eric Neidhardt
+// Inspired by SUMO's osmGet.py (no code copied).
 package gogetosm
 
 import (
