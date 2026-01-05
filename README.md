@@ -38,6 +38,7 @@ osmget -t 2              # split output into multiple tiles
 osmget -timeout 10       # connection timeout
 osmget -retries 10       # retry failed tile download
 osmget -retryDelay 5     # wait this many seconds before retry download
+osmget -url              # custom overpass api to be used
 osmget -elementLimit 5   # element limit in osm file
 osmget -verbose          # extra debug output
 osmget -continue         # skip already downloaded files
