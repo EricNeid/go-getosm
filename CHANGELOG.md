@@ -4,8 +4,13 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+## 0.7.0 - 2026-01-05
+### Added
+* Option to configure overpass api url
+
 ### 0.6.0 - 2025-11-04
-* Option: to skip already downloaded tiles
+### Added
+* Option to skip already downloaded tiles
 
 ## 0.5.0 - 2025-10-29
 ### Added
