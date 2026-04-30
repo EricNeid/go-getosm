@@ -31,12 +31,20 @@ func FormatQuery(bb BoundingBox, timeout, elementLimit int) string {
 	`, timeout, elementLimit, bb.North, bb.South, bb.West, bb.East)
 }
 
-func Download(apiURL, query string) (*[]byte, error) {
+func Download(apiURL, customHeader, query string) (*[]byte, error) {
 	Log.Debugf("download using query: %s\n", query)
 	client := http.Client{
 		Timeout: 0, // no timeout
 	}
-	resp, err := client.Post(apiURL, "text/xml", strings.NewReader(query))
+
+	req, err := http.NewRequest("POST", apiURL, strings.NewReader(query))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "text/xml")
+	req.Header.Set("User-Agent", customHeader)
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}

@@ -4,6 +4,12 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+## 0.8.0 - 2026-04-30
+### Added
+* Option to configure custom header
+### Changed
+* Set element limit to 500000000
+
 ## 0.7.0 - 2026-01-05
 ### Added
 * Option to configure overpass api url

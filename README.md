@@ -42,6 +42,7 @@ osmget -url              # custom overpass api to be used
 osmget -elementLimit 5   # element limit in osm file
 osmget -verbose          # extra debug output
 osmget -continue         # skip already downloaded files
+osmget -header           # set custom header
 osmget -h                # print usage
 ```
 

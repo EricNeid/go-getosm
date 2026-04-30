@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	version = "0.7.0"
+	version = "0.8.0"
 )
 
 var (
@@ -24,11 +24,12 @@ var (
 	tiles              = 1
 	prefix             = "osm"
 	timeout            = 240
-	elementLimit       = 1073741824
+	elementLimit       = 500000000
 	verbose            = false
 	retries            = 5
 	retryDelaySec      = 10
 	continueLastFailed = false
+	customHeader       = "OsmGet-Tool/1.0 (Contact: max.muster@domain.de)"
 )
 
 func parseArguments() {
@@ -43,6 +44,7 @@ func parseArguments() {
 
 	flag.StringVar(&bbox, "b", bbox, "Bounding box: west,south,east,north")
 	flag.StringVar(&prefix, "prefix", prefix, "Prefix of output file")
+	flag.StringVar(&customHeader, "header", customHeader, "Set custom header to be used")
 	flag.IntVar(&tiles, "t", tiles, "Number of tiles to split the bounding box into")
 	flag.IntVar(&timeout, "timeout", timeout, "Timeout for connection")
 	flag.IntVar(&retries, "retries", retries, "How often to retry the download of a failed tile")
@@ -98,11 +100,11 @@ func main() {
 
 		// download tile until retries are exhausted
 		query := app.FormatQuery(bb, timeout, elementLimit)
-		result, err := app.Download(url, query)
+		result, err := app.Download(url, customHeader, query)
 		retryDelay := time.Duration(retryDelaySec) * time.Second
 		for retry := 1; err != nil && retry <= retries; retry++ {
 			log.Warningf("error downloading data: %v, attempting retry %d of %d in %s seconds\n", err, retry, retries, retryDelay)
-			result, err = app.Download(url, query)
+			result, err = app.Download(url, customHeader, query)
 			time.Sleep(retryDelay)
 		}
 		if err != nil {
