@@ -24,7 +24,6 @@ func TestParseTileMode_invalidMode(t *testing.T) {
 }
 
 func TestReadBoundingBox_tileVertical(t *testing.T) {
-	// arrange
 	// action
 	bbs, err := ReadBoundingBox("10,50,11,51", 2, TileVertical)
 	// verify
@@ -43,7 +42,6 @@ func TestReadBoundingBox_tileVertical(t *testing.T) {
 }
 
 func TestReadBoundingBox_tileHorizontal(t *testing.T) {
-	// arrange
 	// action
 	bbs, err := ReadBoundingBox("10,50,11,51.0", 2, TileHorizontal)
 	// verify
