@@ -11,6 +11,12 @@ import (
 	"strings"
 )
 
+type Request struct {
+	URL             string
+	CustomUserAgent string
+	Query           string
+}
+
 var ErrorDownload = errors.New("could not retrieve data")
 
 func FormatQuery(bb BoundingBox, timeout, elementLimit int) string {
@@ -31,18 +37,18 @@ func FormatQuery(bb BoundingBox, timeout, elementLimit int) string {
 	`, timeout, elementLimit, bb.North, bb.South, bb.West, bb.East)
 }
 
-func Download(apiURL, customHeader, query string) (*[]byte, error) {
-	Log.Debugf("download using query: %s\n", query)
+func (r Request) Download() (*[]byte, error) {
+	Log.Debugf("download using query: %s\n", r.Query)
 	client := http.Client{
 		Timeout: 0, // no timeout
 	}
 
-	req, err := http.NewRequest("POST", apiURL, strings.NewReader(query))
+	req, err := http.NewRequest("POST", r.URL, strings.NewReader(r.Query))
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "text/xml")
-	req.Header.Set("User-Agent", customHeader)
+	req.Header.Set("User-Agent", r.CustomUserAgent)
 
 	resp, err := client.Do(req)
 	if err != nil {

@@ -4,6 +4,9 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+### Changed
+* Minor improvements in cod
+
 ## 0.8.0 - 2026-04-30
 ### Added
 * Option to configure custom header

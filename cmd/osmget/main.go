@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	app "github.com/EricNeid/go-getosm"
+	getosm "github.com/EricNeid/go-getosm"
 	"github.com/op/go-logging"
 )
 
@@ -29,7 +29,7 @@ var (
 	retries            = 5
 	retryDelaySec      = 10
 	continueLastFailed = false
-	customHeader       = "OsmGet-Tool/1.0 (Contact: max.muster@domain.de)"
+	userAgent          = "OsmGet-Tool/1.0 "
 )
 
 func parseArguments() {
@@ -44,7 +44,7 @@ func parseArguments() {
 
 	flag.StringVar(&bbox, "b", bbox, "Bounding box: west,south,east,north")
 	flag.StringVar(&prefix, "prefix", prefix, "Prefix of output file")
-	flag.StringVar(&customHeader, "header", customHeader, "Set custom header to be used")
+	flag.StringVar(&userAgent, "userAgent", userAgent, "Set custom user agent to be used in the header")
 	flag.IntVar(&tiles, "t", tiles, "Number of tiles to split the bounding box into")
 	flag.IntVar(&timeout, "timeout", timeout, "Timeout for connection")
 	flag.IntVar(&retries, "retries", retries, "How often to retry the download of a failed tile")
@@ -63,18 +63,18 @@ func parseArguments() {
 	}
 }
 
-var log = app.Log
+var log = getosm.Log
 
 func main() {
 	parseArguments()
 
 	if verbose {
-		app.SetLogLevel(logging.DEBUG)
+		getosm.SetLogLevel(logging.DEBUG)
 	} else {
-		app.SetLogLevel(logging.INFO)
+		getosm.SetLogLevel(logging.INFO)
 	}
 
-	bbs, err := app.ReadBoundingBox(bbox, tiles)
+	bbs, err := getosm.ReadBoundingBox(bbox, tiles)
 	if err != nil {
 		flag.Usage()
 		os.Exit(1)
@@ -99,12 +99,17 @@ func main() {
 		}
 
 		// download tile until retries are exhausted
-		query := app.FormatQuery(bb, timeout, elementLimit)
-		result, err := app.Download(url, customHeader, query)
+		request := getosm.Request{
+			Query:           getosm.FormatQuery(bb, timeout, elementLimit),
+			CustomUserAgent: userAgent,
+			URL:             url,
+		}
+
+		result, err := request.Download()
 		retryDelay := time.Duration(retryDelaySec) * time.Second
 		for retry := 1; err != nil && retry <= retries; retry++ {
 			log.Warningf("error downloading data: %v, attempting retry %d of %d in %s seconds\n", err, retry, retries, retryDelay)
-			result, err = app.Download(url, customHeader, query)
+			result, err = request.Download()
 			time.Sleep(retryDelay)
 		}
 		if err != nil {
