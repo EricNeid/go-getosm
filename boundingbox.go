@@ -5,6 +5,7 @@ package gogetosm
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -15,7 +16,25 @@ type BoundingBox struct {
 	West, South, East, North float64
 }
 
-func ReadBoundingBox(bbString string, tiles int) (bbs []BoundingBox, err error) {
+type TileMode string
+
+const (
+	TileVertical   = "vertical"
+	TileHorizontal = "horizontal"
+	TilegGrid      = "grid"
+)
+
+func ParseTileMode(str string) (TileMode, error) {
+	switch TileMode(str) {
+	case TileVertical, TileHorizontal, TilegGrid:
+		return TileMode(str), nil
+	default:
+		Log.Errorf("could not parse tile mode %s\n", str)
+		return "", fmt.Errorf("unknown TileMode: %s", str)
+	}
+}
+
+func ReadBoundingBox(bbString string, tiles int, tileMode TileMode) (bbs []BoundingBox, err error) {
 	bbStrParts := strings.Split(bbString, ",")
 	if len(bbStrParts) != 4 {
 		Log.Errorf("invalid bounding box given: expecting w,s,e,n")
@@ -46,17 +65,38 @@ func ReadBoundingBox(bbString string, tiles int) (bbs []BoundingBox, err error) 
 		return []BoundingBox{{w, s, e, n}}, nil
 	}
 
-	tileWidth := (e - w) / float64(tiles)
-	slidingWest := w
-	for i := 0; i < tiles; i++ {
-		e = slidingWest + tileWidth
-		bbs = append(bbs, BoundingBox{
-			West:  slidingWest,
-			South: s,
-			East:  e,
-			North: n,
-		})
-		slidingWest = e
+	switch tileMode {
+	case TileVertical:
+		tileWidth := (e - w) / float64(tiles)
+		slidingWest := w
+		var slidingEast float64
+		for i := 0; i < tiles; i++ {
+			slidingEast = slidingWest + tileWidth
+			bbs = append(bbs, BoundingBox{
+				West:  slidingWest,
+				South: s,
+				East:  slidingEast,
+				North: n,
+			})
+			slidingWest = slidingEast
+		}
+	case TileHorizontal:
+		tileWidth := (n - s) / float64(tiles)
+		slidingSouth := s
+		var slidingNorth float64
+		for i := 0; i < tiles; i++ {
+			slidingNorth = slidingSouth + tileWidth
+			bbs = append(bbs, BoundingBox{
+				West:  w,
+				South: slidingSouth,
+				East:  e,
+				North: slidingNorth,
+			})
+			slidingSouth = slidingNorth
+		}
+	default:
+		return nil, errors.New("unsupported tileing operation")
 	}
+
 	return bbs, nil
 }

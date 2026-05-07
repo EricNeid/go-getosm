@@ -30,6 +30,7 @@ var (
 	retryDelaySec      = 10
 	continueLastFailed = false
 	userAgent          = "OsmGet-Tool/1.0 "
+	tileMode           = getosm.TileVertical
 )
 
 func parseArguments() {
@@ -46,6 +47,7 @@ func parseArguments() {
 	flag.StringVar(&prefix, "prefix", prefix, "Prefix of output file")
 	flag.StringVar(&userAgent, "userAgent", userAgent, "Set custom user agent to be used in the header")
 	flag.IntVar(&tiles, "t", tiles, "Number of tiles to split the bounding box into")
+	flag.StringVar(&tileMode, "tileMode", tileMode, "Howto split the bounding box into tiles (vertical,horizontal,grid)")
 	flag.IntVar(&timeout, "timeout", timeout, "Timeout for connection")
 	flag.IntVar(&retries, "retries", retries, "How often to retry the download of a failed tile")
 	flag.IntVar(&retryDelaySec, "retryDelay", retryDelaySec, "Delay between retries in seconds")
@@ -74,7 +76,13 @@ func main() {
 		getosm.SetLogLevel(logging.INFO)
 	}
 
-	bbs, err := getosm.ReadBoundingBox(bbox, tiles)
+	tileMode, err := getosm.ParseTileMode(tileMode)
+	if err != nil {
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	bbs, err := getosm.ReadBoundingBox(bbox, tiles, tileMode)
 	if err != nil {
 		flag.Usage()
 		os.Exit(1)
