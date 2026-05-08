@@ -11,14 +11,17 @@ import (
 	"strings"
 )
 
+// Request is a wrapper for different download parameters.
 type Request struct {
 	URL             string
 	CustomUserAgent string
 	Query           string
 }
 
+// ErrorDownload indicates that the download failed.
 var ErrorDownload = errors.New("could not retrieve data")
 
+// FormatQuery creates a valid overpass query (xml) for the given input parameters.
 func FormatQuery(bb BoundingBox, timeout, elementLimit int) string {
 	return fmt.Sprintf(`
 	<osm-script timeout="%d" element-limit="%d">
@@ -37,6 +40,7 @@ func FormatQuery(bb BoundingBox, timeout, elementLimit int) string {
 	`, timeout, elementLimit, bb.North, bb.South, bb.West, bb.East)
 }
 
+// Download tile using the given request.
 func (r Request) Download() (*[]byte, error) {
 	Log.Debugf("download using query: %s\n", r.Query)
 	client := http.Client{
@@ -54,7 +58,7 @@ func (r Request) Download() (*[]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

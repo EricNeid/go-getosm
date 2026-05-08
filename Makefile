@@ -1,5 +1,5 @@
 DIR := ${CURDIR}
-GO_IMAGE := golang:1.20.0-alpine
+GO_IMAGE := golang:1.22.0-alpine
 DOCKER := podman
 
 .PHONY: build-windows
@@ -35,5 +35,5 @@ lint:
 	${DOCKER} run -it --rm \
 		-e CGO_ENABLED=0 \
 		-w /app -v ${DIR}:/app \
-		golangci/golangci-lint:v1.50.1 \
+		golangci/golangci-lint:v2.12.2 \
 		golangci-lint run ./...

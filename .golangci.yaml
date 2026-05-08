@@ -1,59 +1,81 @@
-linters-settings:
-  errcheck:
-    check-type-assertions: true
-  goconst:
-    min-len: 2
-    min-occurrences: 3
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - experimental
-      - opinionated
-      - performance
-      - style
-  govet:
-    check-shadowing: true
-#    enable:
-#      - fieldalignment
-  nolintlint:
-    require-explanation: true
-    require-specific: true
-
-linters:
-  disable-all: true
-  enable:
-    - bodyclose
-    - depguard
-    - dogsled
-    - dupl
-#    - errcheck
-    - exportloopref
-    - exhaustive
-    - goconst
-    - gocritic
-    - gofmt
-    - goimports
-#    - gomnd
-    - gocyclo
-    - gosec
-    - gosimple
-    - govet
-    - ineffassign
-    - misspell
-    - nolintlint
-    - nakedret
-#    - prealloc
-    - predeclared
-    - revive
-    - staticcheck
-    - stylecheck
-    - thelper
-    - tparallel
-    - typecheck
-    - unconvert
-    - unparam
-    - whitespace
-#    - wsl
+# Setup the configuration schema version for v2
+version: "2"
 
 run:
-  issues-exit-code: 1
+  # Timeout for analysis. Default is 1m.
+  timeout: 5m
+  # Set the base directory for relative paths (cfg, wd, gomod, gitroot)
+  relative-path-mode: cfg
+
+linters:
+  # We start by disabling all default linters to enable them selectively
+  default: none
+  
+  enable:
+    # --- Core & Bug-Detection ---
+    - errcheck     # Checks for unchecked errors
+    - govet        # Reports suspicious constructs (printf-errors, shadow variables)
+    - ineffassign  # Detects unused assignments to variables
+    - staticcheck  # Applies a massive set of static analysis checks
+    - unused       # Finds unused constants, variables, functions, and types
+
+    # --- Code Style & Quality ---
+    - revive       # Highly configurable linter for style guidelines (successor to golint)
+    - gocritic     # Provides diagnostics, style, and performance advice
+    - misspell     # Finds commonly misspelled English words in comments and strings
+
+    # --- Security & Performance ---
+    - gosec        # Inspects source code for security problems
+    - prealloc     # Finds slice declarations that could potentially be preallocated
+
+  # Linter
+  settings:
+    govet:
+      # Enable shadow check (detects shadowed variables)
+      enable:
+        - shadow
+
+    gosec:
+      excludes:
+        - G306
+
+    revive:
+      severity: warning
+      rules:
+        - name: exported
+          disabled: false
+        - name: blank-imports
+          disabled: false
+
+    gocritic:
+      # Enable useful diagnostic, style, and performance checks
+      enabled-tags:
+        - diagnostic
+        - style
+        - performance
+      disabled-checks:
+        - whyNoLint # Disables the requirement to explain '//nolint' comments
+
+# Formatters
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    gofmt:
+      simplify: true
+
+issues:
+  # In v2, there are no default exclusions. Set presets if you want basic excludes.
+  exclude-dirs:
+    - vendor
+
+  # Maximum count of issues with the same text to include (0 = unlimited)
+  max-same-issues: 3
+
+  # Rules to exclude certain linters from specific files
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck
+        - gosec

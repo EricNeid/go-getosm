@@ -47,7 +47,7 @@ func Equals(t *testing.T, exp, act any) {
 	}
 }
 
-// Equals fails the test if exp is not almost equal to act.
+// AlmostEquals fails the test if exp is not almost equal to act.
 func AlmostEquals(t *testing.T, exp, act float64) {
 	t.Helper()
 

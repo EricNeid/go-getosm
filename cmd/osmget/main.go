@@ -21,7 +21,8 @@ const (
 var (
 	url                = "https://www.overpass-api.de/api/interpreter"
 	bbox               = ""
-	tiles              = 1
+	tilesX             = 1
+	tilesY             = 1
 	prefix             = "osm"
 	timeout            = 240
 	elementLimit       = 500000000
@@ -30,7 +31,6 @@ var (
 	retryDelaySec      = 10
 	continueLastFailed = false
 	userAgent          = "OsmGet-Tool/1.0 "
-	tileMode           = getosm.TileVertical
 )
 
 func parseArguments() {
@@ -46,8 +46,9 @@ func parseArguments() {
 	flag.StringVar(&bbox, "b", bbox, "Bounding box: west,south,east,north")
 	flag.StringVar(&prefix, "prefix", prefix, "Prefix of output file")
 	flag.StringVar(&userAgent, "userAgent", userAgent, "Set custom user agent to be used in the header")
-	flag.IntVar(&tiles, "t", tiles, "Number of tiles to split the bounding box into")
-	flag.StringVar(&tileMode, "tileMode", tileMode, "Howto split the bounding box into tiles (vertical,horizontal,grid)")
+	flag.IntVar(&tilesX, "t", tilesX, "Number of columns tiles to split the bounding box")
+	flag.IntVar(&tilesX, "tx", tilesX, "Number of columns tiles to split the bounding box")
+	flag.IntVar(&tilesY, "ty", tilesY, "Number of rows to split the bounding box")
 	flag.IntVar(&timeout, "timeout", timeout, "Timeout for connection")
 	flag.IntVar(&retries, "retries", retries, "How often to retry the download of a failed tile")
 	flag.IntVar(&retryDelaySec, "retryDelay", retryDelaySec, "Delay between retries in seconds")
@@ -58,7 +59,7 @@ func parseArguments() {
 
 	flag.Parse()
 
-	if tiles < 1 {
+	if tilesX*tilesY < 1 {
 		log.Infof("invalid number of tiles given, must be >= 1\n")
 		flag.Usage()
 		os.Exit(1)
@@ -76,13 +77,7 @@ func main() {
 		getosm.SetLogLevel(logging.INFO)
 	}
 
-	tileMode, err := getosm.ParseTileMode(tileMode)
-	if err != nil {
-		flag.Usage()
-		os.Exit(1)
-	}
-
-	bbs, err := getosm.ReadBoundingBox(bbox, tiles, tileMode)
+	bbs, err := getosm.ReadBoundingBox(bbox, tilesX, tilesY)
 	if err != nil {
 		flag.Usage()
 		os.Exit(1)
@@ -125,7 +120,10 @@ func main() {
 		}
 
 		// create output
-		os.WriteFile(outputFile, *result, os.ModePerm)
+		err = os.WriteFile(outputFile, *result, os.ModePerm)
+		if err != nil {
+			log.Fatalf("error writing data: %v, could not write file %s\n", err, outputFile)
+		}
 		outputFiles = append(outputFiles, outputFile)
 	}
 

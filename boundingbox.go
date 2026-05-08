@@ -5,36 +5,21 @@ package gogetosm
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 )
 
+// ErrorInvalidBB indicates that the given bounding box string is not valid.
 var ErrorInvalidBB = errors.New("invalid bounding box given")
 
+// BoundingBox is a wrapper for geographic bounding box.
 type BoundingBox struct {
 	West, South, East, North float64
 }
 
-type TileMode string
-
-const (
-	TileVertical   = "vertical"
-	TileHorizontal = "horizontal"
-	TilegGrid      = "grid"
-)
-
-func ParseTileMode(str string) (TileMode, error) {
-	switch TileMode(str) {
-	case TileVertical, TileHorizontal, TilegGrid:
-		return TileMode(str), nil
-	default:
-		Log.Errorf("could not parse tile mode %s\n", str)
-		return "", fmt.Errorf("unknown TileMode: %s", str)
-	}
-}
-
-func ReadBoundingBox(bbString string, tiles int, tileMode TileMode) (bbs []BoundingBox, err error) {
+// ReadBoundingBox reads the given bounding box string and creates a list of boxed, according to the given number
+// of rows and columns.
+func ReadBoundingBox(bbString string, tilesX, tilesY int) (bbs []BoundingBox, err error) {
 	bbStrParts := strings.Split(bbString, ",")
 	if len(bbStrParts) != 4 {
 		Log.Errorf("invalid bounding box given: expecting w,s,e,n")
@@ -61,42 +46,22 @@ func ReadBoundingBox(bbString string, tiles int, tileMode TileMode) (bbs []Bound
 		return bbs, ErrorInvalidBB
 	}
 
-	if tiles == 1 {
-		return []BoundingBox{{w, s, e, n}}, nil
-	}
-
-	switch tileMode {
-	case TileVertical:
-		tileWidth := (e - w) / float64(tiles)
-		slidingWest := w
-		var slidingEast float64
-		for i := 0; i < tiles; i++ {
-			slidingEast = slidingWest + tileWidth
+	tileWidth := (e - w) / float64(tilesX)
+	tileHeight := (n - s) / float64(tilesY)
+	for y := range tilesY {
+		south := s + float64(y)*tileHeight
+		north := south + tileHeight
+		for x := range tilesX {
+			west := w + float64(x)*tileWidth
+			east := west + tileWidth
 			bbs = append(bbs, BoundingBox{
-				West:  slidingWest,
-				South: s,
-				East:  slidingEast,
-				North: n,
+				West:  west,
+				South: south,
+				East:  east,
+				North: north,
 			})
-			slidingWest = slidingEast
-		}
-	case TileHorizontal:
-		tileWidth := (n - s) / float64(tiles)
-		slidingSouth := s
-		var slidingNorth float64
-		for i := 0; i < tiles; i++ {
-			slidingNorth = slidingSouth + tileWidth
-			bbs = append(bbs, BoundingBox{
-				West:  w,
-				South: slidingSouth,
-				East:  e,
-				North: slidingNorth,
-			})
-			slidingSouth = slidingNorth
-		}
-	default:
-		return nil, errors.New("unsupported tileing operation")
-	}
 
+		}
+	}
 	return bbs, nil
 }

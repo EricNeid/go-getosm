@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 ### Changed
 * Minor improvements in cod
+### Added
+* Argumentes tx and ty to split into columns, rows (and grid)
 
 ## 0.8.0 - 2026-04-30
 ### Added

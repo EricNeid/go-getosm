@@ -35,6 +35,8 @@ Options:
 ```bash
 osmget -prefix osm2025q3 # prepend downloaded tiles with given label
 osmget -t 2              # split output into multiple tiles
+osmget -tx 2             # split output into multiple tiles (columns)
+osmget -ty 2             # split output into multiple tiles (rows)
 osmget -timeout 10       # connection timeout
 osmget -retries 10       # retry failed tile download
 osmget -retryDelay 5     # wait this many seconds before retry download
