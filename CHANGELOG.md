@@ -4,6 +4,10 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+
+### Changed
+* Improve naming of output files when being tiled is used
+
 ## 0.9.0 - 2026-05-08
 ### Changed
 * Minor improvements in cod

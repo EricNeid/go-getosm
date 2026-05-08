@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	version = "0.9.0"
+	version = "0.10.0-rc.1"
 )
 
 var (
@@ -90,7 +90,7 @@ func main() {
 		// output file name
 		var outputFile string
 		if len(bbs) > 1 {
-			outputFile = fmt.Sprintf("%s%d_%d.osm.xml", prefix, i+1, len(bbs))
+			outputFile = fmt.Sprintf("%s_%d_%d.osm.xml", prefix, i+1, len(bbs))
 		} else {
 			outputFile = fmt.Sprintf("%s_bbox.osm.xml", prefix)
 		}
