@@ -18,9 +18,20 @@ const (
 	version = "0.10.0-rc.1"
 )
 
+type bboxesFlag []string
+
+func (b *bboxesFlag) String() string {
+	return strings.Join(*b, "; ")
+}
+
+func (b *bboxesFlag) Set(value string) error {
+	*b = append(*b, value)
+	return nil
+}
+
 var (
 	url                = "https://www.overpass-api.de/api/interpreter"
-	bbox               = ""
+	bboxes             bboxesFlag
 	tilesX             = 1
 	tilesY             = 1
 	prefix             = "osm"
@@ -43,7 +54,7 @@ func parseArguments() {
 		fmt.Printf("  Example: %s -b 13.10,52.20,13.20,52.30 -t 4 -verbose\n", os.Args[0])
 	}
 
-	flag.StringVar(&bbox, "b", bbox, "Bounding box: west,south,east,north")
+	flag.Var(&bboxes, "b", "Bounding box: west,south,east,north")
 	flag.StringVar(&prefix, "prefix", prefix, "Prefix of output file")
 	flag.StringVar(&userAgent, "userAgent", userAgent, "Set custom user agent to be used in the header")
 	flag.IntVar(&tilesX, "t", tilesX, "Number of columns tiles to split the bounding box")
@@ -77,7 +88,9 @@ func main() {
 		getosm.SetLogLevel(logging.INFO)
 	}
 
-	bbs, err := getosm.ReadBoundingBox(bbox, tilesX, tilesY)
+	// TODO iterate over all boundingboxes
+
+	bbs, err := getosm.ReadBoundingBox(bboxes[0], tilesX, tilesY)
 	if err != nil {
 		flag.Usage()
 		os.Exit(1)
