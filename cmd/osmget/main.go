@@ -89,22 +89,25 @@ func main() {
 	}
 
 	var outputFiles []string
-	for _, bb := range bboxes {
+	for bbIndex, bb := range bboxes {
 		bbTiles, err := getosm.ReadBoundingBox(bb, tilesX, tilesY)
 		if err != nil {
 			flag.Usage()
 			os.Exit(1)
 		}
 
-		for i, bb := range bbTiles {
-			log.Infof("downloading tiles %d of %d\n", i+1, len(bbTiles))
+		for tileIndex, bb := range bbTiles {
+			log.Infof("downloading tiles %d of %d\n", tileIndex+1, len(bbTiles))
 
 			// output file name
 			var outputFile string
 			if len(bbTiles) > 1 {
-				outputFile = fmt.Sprintf("%s_%d_%d.osm.xml", prefix, i+1, len(bbTiles))
+				outputFile = fmt.Sprintf("%s_%d_%d.osm.xml", prefix, tileIndex+1, len(bbTiles))
 			} else {
 				outputFile = fmt.Sprintf("%s_bbox.osm.xml", prefix)
+			}
+			if len(bboxes) > 1 {
+				outputFile = fmt.Sprintf("bb_%d_%s", bbIndex, outputFile) // append bb index if required
 			}
 
 			// check if file alreads exits
