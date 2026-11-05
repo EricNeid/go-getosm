@@ -30,7 +30,7 @@ var (
 	retries            = 5
 	retryDelaySec      = 10
 	continueLastFailed = false
-	userAgent          = "OsmGet-Tool/1.0 "
+	userAgent          = fmt.Sprintf("OsmGet-Tool/%s", version)
 )
 
 func parseArguments() {
