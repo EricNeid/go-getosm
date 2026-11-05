@@ -88,56 +88,56 @@ func main() {
 		getosm.SetLogLevel(logging.INFO)
 	}
 
-	// TODO iterate over all boundingboxes
-
-	bbs, err := getosm.ReadBoundingBox(bboxes[0], tilesX, tilesY)
-	if err != nil {
-		flag.Usage()
-		os.Exit(1)
-	}
-
 	var outputFiles []string
-	for i, bb := range bbs {
-		log.Infof("downloading tiles %d of %d\n", i+1, len(bbs))
-
-		// output file name
-		var outputFile string
-		if len(bbs) > 1 {
-			outputFile = fmt.Sprintf("%s_%d_%d.osm.xml", prefix, i+1, len(bbs))
-		} else {
-			outputFile = fmt.Sprintf("%s_bbox.osm.xml", prefix)
-		}
-
-		// check if file alreads exits
-		if continueLastFailed && doesFileExists(outputFile) {
-			log.Infof("skipping already present tile %s\n", outputFile)
-			continue
-		}
-
-		// download tile until retries are exhausted
-		request := getosm.Request{
-			Query:           getosm.FormatQuery(bb, timeout, elementLimit),
-			CustomUserAgent: userAgent,
-			URL:             url,
-		}
-
-		result, err := request.Download()
-		retryDelay := time.Duration(retryDelaySec) * time.Second
-		for retry := 1; err != nil && retry <= retries; retry++ {
-			log.Warningf("error downloading data: %v, attempting retry %d of %d in %s seconds\n", err, retry, retries, retryDelay)
-			result, err = request.Download()
-			time.Sleep(retryDelay)
-		}
+	for _, bb := range bboxes {
+		bbTiles, err := getosm.ReadBoundingBox(bb, tilesX, tilesY)
 		if err != nil {
-			log.Fatalf("error downloading data: %v, maximum retries reached\n", err)
+			flag.Usage()
+			os.Exit(1)
 		}
 
-		// create output
-		err = os.WriteFile(outputFile, *result, os.ModePerm)
-		if err != nil {
-			log.Fatalf("error writing data: %v, could not write file %s\n", err, outputFile)
+		for i, bb := range bbTiles {
+			log.Infof("downloading tiles %d of %d\n", i+1, len(bbTiles))
+
+			// output file name
+			var outputFile string
+			if len(bbTiles) > 1 {
+				outputFile = fmt.Sprintf("%s_%d_%d.osm.xml", prefix, i+1, len(bbTiles))
+			} else {
+				outputFile = fmt.Sprintf("%s_bbox.osm.xml", prefix)
+			}
+
+			// check if file alreads exits
+			if continueLastFailed && doesFileExists(outputFile) {
+				log.Infof("skipping already present tile %s\n", outputFile)
+				continue
+			}
+
+			// download tile until retries are exhausted
+			request := getosm.Request{
+				Query:           getosm.FormatQuery(bb, timeout, elementLimit),
+				CustomUserAgent: userAgent,
+				URL:             url,
+			}
+
+			result, err := request.Download()
+			retryDelay := time.Duration(retryDelaySec) * time.Second
+			for retry := 1; err != nil && retry <= retries; retry++ {
+				log.Warningf("error downloading data: %v, attempting retry %d of %d in %s seconds\n", err, retry, retries, retryDelay)
+				result, err = request.Download()
+				time.Sleep(retryDelay)
+			}
+			if err != nil {
+				log.Fatalf("error downloading data: %v, maximum retries reached\n", err)
+			}
+
+			// create output
+			err = os.WriteFile(outputFile, *result, os.ModePerm)
+			if err != nil {
+				log.Fatalf("error writing data: %v, could not write file %s\n", err, outputFile)
+			}
+			outputFiles = append(outputFiles, outputFile)
 		}
-		outputFiles = append(outputFiles, outputFile)
 	}
 
 	log.Infof("all done")
