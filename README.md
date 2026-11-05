@@ -26,13 +26,14 @@ go install github.com/EricNeid/go-getosm/cmd/osmget@latest
 Download xml for given bounding box:
 
 ```bash
-osmget -b 13.168487548828123,52.29189255277229,13.278350830078125,52.35211857272093
-osmget -b 13.168487548828123,52.29189255277229,13.278350830078125,52.35211857272093 -t 4 -verbose -continue
+osmget -b 13.168,52.291,13.278,52.352
+osmget -b 13.168,52.291,13.278,52.352 -t 4 -verbose -continue
 ```
 
 Options:
 
 ```bash
+osmget -b bb1 -b bb2     # can be applied multiple times
 osmget -prefix osm2025q3 # prepend downloaded tiles with given label
 osmget -t 2              # split output into multiple tiles
 osmget -tx 2             # split output into multiple tiles (columns)
