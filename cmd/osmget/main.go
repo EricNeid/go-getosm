@@ -18,9 +18,20 @@ const (
 	version = "0.10.0-rc.1"
 )
 
+type bboxesFlag []string
+
+func (b *bboxesFlag) String() string {
+	return strings.Join(*b, "; ")
+}
+
+func (b *bboxesFlag) Set(value string) error {
+	*b = append(*b, value)
+	return nil
+}
+
 var (
 	url                = "https://www.overpass-api.de/api/interpreter"
-	bbox               = ""
+	bboxes             bboxesFlag
 	tilesX             = 1
 	tilesY             = 1
 	prefix             = "osm"
@@ -43,7 +54,7 @@ func parseArguments() {
 		fmt.Printf("  Example: %s -b 13.10,52.20,13.20,52.30 -t 4 -verbose\n", os.Args[0])
 	}
 
-	flag.StringVar(&bbox, "b", bbox, "Bounding box: west,south,east,north")
+	flag.Var(&bboxes, "b", "Bounding box: west,south,east,north")
 	flag.StringVar(&prefix, "prefix", prefix, "Prefix of output file")
 	flag.StringVar(&userAgent, "userAgent", userAgent, "Set custom user agent to be used in the header")
 	flag.IntVar(&tilesX, "t", tilesX, "Number of columns tiles to split the bounding box")
@@ -77,54 +88,60 @@ func main() {
 		getosm.SetLogLevel(logging.INFO)
 	}
 
-	bbs, err := getosm.ReadBoundingBox(bbox, tilesX, tilesY)
-	if err != nil {
-		flag.Usage()
-		os.Exit(1)
-	}
-
 	var outputFiles []string
-	for i, bb := range bbs {
-		log.Infof("downloading tiles %d of %d\n", i+1, len(bbs))
-
-		// output file name
-		var outputFile string
-		if len(bbs) > 1 {
-			outputFile = fmt.Sprintf("%s_%d_%d.osm.xml", prefix, i+1, len(bbs))
-		} else {
-			outputFile = fmt.Sprintf("%s_bbox.osm.xml", prefix)
-		}
-
-		// check if file alreads exits
-		if continueLastFailed && doesFileExists(outputFile) {
-			log.Infof("skipping already present tile %s\n", outputFile)
-			continue
-		}
-
-		// download tile until retries are exhausted
-		request := getosm.Request{
-			Query:           getosm.FormatQuery(bb, timeout, elementLimit),
-			CustomUserAgent: userAgent,
-			URL:             url,
-		}
-
-		result, err := request.Download()
-		retryDelay := time.Duration(retryDelaySec) * time.Second
-		for retry := 1; err != nil && retry <= retries; retry++ {
-			log.Warningf("error downloading data: %v, attempting retry %d of %d in %s seconds\n", err, retry, retries, retryDelay)
-			result, err = request.Download()
-			time.Sleep(retryDelay)
-		}
+	for bbIndex, bb := range bboxes {
+		bbTiles, err := getosm.ReadBoundingBox(bb, tilesX, tilesY)
 		if err != nil {
-			log.Fatalf("error downloading data: %v, maximum retries reached\n", err)
+			flag.Usage()
+			os.Exit(1)
 		}
 
-		// create output
-		err = os.WriteFile(outputFile, *result, os.ModePerm)
-		if err != nil {
-			log.Fatalf("error writing data: %v, could not write file %s\n", err, outputFile)
+		log.Infof("processing bounding box %d if %d\n", bbIndex+1, len(bboxes))
+		for tileIndex, bb := range bbTiles {
+			log.Infof("downloading tiles %d of %d\n", tileIndex+1, len(bbTiles))
+
+			// output file name
+			var outputFile string
+			if len(bbTiles) > 1 {
+				outputFile = fmt.Sprintf("%s_%d_%d.osm.xml", prefix, tileIndex+1, len(bbTiles))
+			} else {
+				outputFile = fmt.Sprintf("%s_bbox.osm.xml", prefix)
+			}
+			if len(bboxes) > 1 {
+				outputFile = fmt.Sprintf("bb_%d_%s", bbIndex, outputFile) // append bb index if required
+			}
+
+			// check if file alreads exits
+			if continueLastFailed && doesFileExists(outputFile) {
+				log.Infof("skipping already present tile %s\n", outputFile)
+				continue
+			}
+
+			// download tile until retries are exhausted
+			request := getosm.Request{
+				Query:           getosm.FormatQuery(bb, timeout, elementLimit),
+				CustomUserAgent: userAgent,
+				URL:             url,
+			}
+
+			result, err := request.Download()
+			retryDelay := time.Duration(retryDelaySec) * time.Second
+			for retry := 1; err != nil && retry <= retries; retry++ {
+				log.Warningf("error downloading data: %v, attempting retry %d of %d in %s seconds\n", err, retry, retries, retryDelay)
+				result, err = request.Download()
+				time.Sleep(retryDelay)
+			}
+			if err != nil {
+				log.Fatalf("error downloading data: %v, maximum retries reached\n", err)
+			}
+
+			// create output
+			err = os.WriteFile(outputFile, *result, os.ModePerm)
+			if err != nil {
+				log.Fatalf("error writing data: %v, could not write file %s\n", err, outputFile)
+			}
+			outputFiles = append(outputFiles, outputFile)
 		}
-		outputFiles = append(outputFiles, outputFile)
 	}
 
 	log.Infof("all done")
