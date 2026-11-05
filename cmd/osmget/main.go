@@ -96,6 +96,7 @@ func main() {
 			os.Exit(1)
 		}
 
+		log.Info("processing boundign box %d if %d\n", bbIndex+1, len(bboxes))
 		for tileIndex, bb := range bbTiles {
 			log.Infof("downloading tiles %d of %d\n", tileIndex+1, len(bbTiles))
 
