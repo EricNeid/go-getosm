@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	version = "0.10.0-rc.1"
+	version = "0.10.0"
 )
 
 type bboxesFlag []string
