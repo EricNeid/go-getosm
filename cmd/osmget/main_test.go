@@ -11,20 +11,34 @@ import (
 func TestDoesFileExists_shouldReturnTrue(t *testing.T) {
 	// action
 	exits := doesFileExists("../../test/testdata/sample.txt")
-	//
+	// verify
 	verify.Assert(t, exits, "file wrongly detected as not present")
 }
 
 func TestDoesFileExists_emptyFile_shouldReturnFalse(t *testing.T) {
 	// action
 	exits := doesFileExists("../../test/testdata/sample-empty.txt")
-	//
+	// verify
 	verify.Assert(t, !exits, "file wrongly detected as not empty")
 }
 
 func TestDoesFileExists_noFile_shouldReturnFalse(t *testing.T) {
 	// action
 	exits := doesFileExists("test/testdata/no-valid-file.txt")
-	//
+	// verify
 	verify.Assert(t, !exits, "file wrongly detected as present")
+}
+
+func TestGetFileName(t *testing.T) {
+	// action
+	name := getFileName("ger", 1, 1, 1, 4)
+	// verify
+	verify.Equals(t, "ger_2_4.osm.xml", name)
+}
+
+func TestGetFileName_multipleBB_shouldAddBBIndex(t *testing.T) {
+	// action
+	name := getFileName("ger", 1, 2, 1, 4)
+	// verify
+	verify.Equals(t, "bb_1_2_ger_2_4.osm.xml", name)
 }

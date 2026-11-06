@@ -101,15 +101,7 @@ func main() {
 			log.Infof("downloading tiles %d of %d\n", tileIndex+1, len(bbTiles))
 
 			// output file name
-			var outputFile string
-			if len(bbTiles) > 1 {
-				outputFile = fmt.Sprintf("%s_%d_%d.osm.xml", prefix, tileIndex+1, len(bbTiles))
-			} else {
-				outputFile = fmt.Sprintf("%s_bbox.osm.xml", prefix)
-			}
-			if len(bboxes) > 1 {
-				outputFile = fmt.Sprintf("bb_%d_%s", bbIndex, outputFile) // append bb index if required
-			}
+			outputFile := getFileName(prefix, bbIndex, len(bboxes), tileIndex, len(bbTiles))
 
 			// check if file alreads exits
 			if continueLastFailed && doesFileExists(outputFile) {
@@ -146,6 +138,19 @@ func main() {
 
 	log.Infof("all done")
 	log.Infof("files created: %s\n", strings.Join(outputFiles, ","))
+}
+
+func getFileName(prefix string, bbIndex, bbCount, tileIndex, tileCount int) string {
+	var outputFile string
+	if tileCount > 1 {
+		outputFile = fmt.Sprintf("%s_%d_%d.osm.xml", prefix, tileIndex+1, tileCount)
+	} else {
+		outputFile = fmt.Sprintf("%s_bbox.osm.xml", prefix)
+	}
+	if bbCount > 1 {
+		outputFile = fmt.Sprintf("bb_%d_%d_%s", bbIndex, bbCount, outputFile) // add bb index if required
+	}
+	return outputFile
 }
 
 func doesFileExists(file string) bool {
