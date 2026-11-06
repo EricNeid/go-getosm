@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 * Improve naming of output files when being tiled is used
 * Add handling for multiple bounding boxes
 * Print overal bounding box string as wkt
+### Removed (Breaking)
+* Removed option -t, use -tx instead
 
 ## 0.9.0 - 2026-05-08
 ### Changed

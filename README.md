@@ -34,7 +34,6 @@ Options:
 ```bash
 osmget -b bb1 -b bb2     # can be applied multiple times
 osmget -prefix osm2025q3 # prepend downloaded tiles with given label
-osmget -t 2              # split output into multiple tiles
 osmget -tx 2             # split output into multiple tiles (columns)
 osmget -ty 2             # split output into multiple tiles (rows)
 osmget -timeout 10       # connection timeout

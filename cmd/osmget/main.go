@@ -57,7 +57,6 @@ func parseArguments() {
 	flag.Var(&bboxes, "b", "Bounding box: west,south,east,north")
 	flag.StringVar(&prefix, "prefix", prefix, "Prefix of output file")
 	flag.StringVar(&userAgent, "userAgent", userAgent, "Set custom user agent to be used in the header")
-	flag.IntVar(&tilesX, "t", tilesX, "Number of columns tiles to split the bounding box")
 	flag.IntVar(&tilesX, "tx", tilesX, "Number of columns tiles to split the bounding box")
 	flag.IntVar(&tilesY, "ty", tilesY, "Number of rows to split the bounding box")
 	flag.IntVar(&timeout, "timeout", timeout, "Timeout for connection")
