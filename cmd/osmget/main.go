@@ -136,8 +136,9 @@ func main() {
 		}
 	}
 
-	log.Infof("all done")
+	log.Infof("all done\n")
 	log.Infof("files created: %s\n", strings.Join(outputFiles, ","))
+	log.Infof("bounding box: %s\n", getosm.BoundingBoxesToWkt(bboxes))
 }
 
 func getFileName(prefix string, bbIndex, bbCount, tileIndex, tileCount int) string {

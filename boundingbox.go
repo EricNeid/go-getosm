@@ -5,6 +5,7 @@ package gogetosm
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -64,4 +65,30 @@ func ReadBoundingBox(bbString string, tilesX, tilesY int) (bbs []BoundingBox, er
 		}
 	}
 	return bbs, nil
+}
+
+// BoundingBoxesToWkt reads the given bounding box strings and creates a wkt multipolygon.
+func BoundingBoxesToWkt(bbStrings []string) string {
+	var bbs []BoundingBox
+	for _, bbStbbString := range bbStrings {
+		bb, _ := ReadBoundingBox(bbStbbString, 1, 1)
+		bbs = append(bbs, bb...)
+	}
+	if len(bbs) == 0 {
+		return ""
+	}
+	var polygons []string
+	for _, bb := range bbs {
+		// WKT polygon ring for single bb
+		// (West South, East South, East North, West North, West South)
+		poly := fmt.Sprintf("((%f %f, %f %f, %f %f, %f %f, %f %f))",
+			bb.West, bb.South,
+			bb.East, bb.South,
+			bb.East, bb.North,
+			bb.West, bb.North,
+			bb.West, bb.South,
+		)
+		polygons = append(polygons, poly)
+	}
+	return "MULTIPOLYGON(" + strings.Join(polygons, ", ") + ")"
 }
