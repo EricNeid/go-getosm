@@ -26,7 +26,7 @@ Download xml for given bounding box:
 
 ```bash
 osmget -b 13.168,52.291,13.278,52.352
-osmget -b 13.168,52.291,13.278,52.352 -t 4 -verbose -continue
+osmget -b 13.168,52.291,13.278,52.352 -tx 2 -ty 2 -verbose -continue
 ```
 
 Options:
