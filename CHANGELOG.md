@@ -9,13 +9,13 @@ All notable changes to this project will be documented in this file.
 ### Changed
 * Improve naming of output files when being tiled is used
 * Add handling for multiple bounding boxes
-* Print overal bounding box string as wkt
+* Print overall bounding box string as wkt
 ### Removed (Breaking)
 * Removed option -t, use -tx instead
 
 ## 0.9.0 - 2026-05-08
 ### Changed
-* Minor improvements in cod
+* Minor improvements in code
 ### Added
 * Argumentes tx and ty to split into columns, rows (and grid)
 
@@ -45,8 +45,8 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 * Naming of tile files starts with 1
 ### Removed
-* Argument q to print query, because it is obsolet by verbose
-### Adedd
+* Argument q to print query, because it is obsolete by verbose
+### Added
 * Print generated files after download
 ### Misc
 * Cleanup
@@ -56,11 +56,11 @@ All notable changes to this project will be documented in this file.
 * Query not completely printed
 * Error in tiling
 ### Added
-* Paramter q to print query
+* Parameter q to print query
 
 ## 0.3.0 - 2025-08-25
 ### Added
-* Option to tile alrge files
+* Option to tile large files
 * Automatic retry if error occurs during download
 * Options to disable/enable verbose logging
 ### Fixed

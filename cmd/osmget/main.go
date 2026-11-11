@@ -95,15 +95,15 @@ func main() {
 			os.Exit(1)
 		}
 
-		log.Infof("processing bounding box %d if %d\n", bbIndex+1, len(bboxes))
+		log.Infof("processing bounding box %d of %d\n", bbIndex+1, len(bboxes))
 		for tileIndex, bb := range bbTiles {
 			log.Infof("downloading tiles %d of %d\n", tileIndex+1, len(bbTiles))
 
 			// output file name
 			outputFile := getFileName(prefix, bbIndex, len(bboxes), tileIndex, len(bbTiles))
 
-			// check if file alreads exits
-			if continueLastFailed && doesFileExists(outputFile) {
+			// check if file already exists
+			if continueLastFailed && doesFileExist(outputFile) {
 				log.Infof("skipping already present tile %s\n", outputFile)
 				continue
 			}
@@ -118,7 +118,7 @@ func main() {
 			result, err := request.Download()
 			retryDelay := time.Duration(retryDelaySec) * time.Second
 			for retry := 1; err != nil && retry <= retries; retry++ {
-				log.Warningf("error downloading data: %v, attempting retry %d of %d in %s seconds\n", err, retry, retries, retryDelay)
+				log.Warningf("error downloading data: %v, attempting retry %d of %d in %s\n", err, retry, retries, retryDelay)
 				result, err = request.Download()
 				time.Sleep(retryDelay)
 			}
@@ -153,7 +153,7 @@ func getFileName(prefix string, bbIndex, bbCount, tileIndex, tileCount int) stri
 	return outputFile
 }
 
-func doesFileExists(file string) bool {
+func doesFileExist(file string) bool {
 	log.Debugf("check if file is already present %s\n", file)
 	stats, err := os.Stat(file)
 	if os.IsNotExist(err) {

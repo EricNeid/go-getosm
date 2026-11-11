@@ -18,7 +18,7 @@ type BoundingBox struct {
 	West, South, East, North float64
 }
 
-// ReadBoundingBox reads the given bounding box string and creates a list of boxed, according to the given number
+// ReadBoundingBox reads the given bounding box string and creates a list of boxes, according to the given number
 // of rows and columns.
 func ReadBoundingBox(bbString string, tilesX, tilesY int) (bbs []BoundingBox, err error) {
 	bbStrParts := strings.Split(bbString, ",")
@@ -70,8 +70,8 @@ func ReadBoundingBox(bbString string, tilesX, tilesY int) (bbs []BoundingBox, er
 // BoundingBoxesToWkt reads the given bounding box strings and creates a wkt multipolygon.
 func BoundingBoxesToWkt(bbStrings []string) string {
 	var bbs []BoundingBox
-	for _, bbStbbString := range bbStrings {
-		bb, _ := ReadBoundingBox(bbStbbString, 1, 1)
+	for _, bbString := range bbStrings {
+		bb, _ := ReadBoundingBox(bbString, 1, 1)
 		bbs = append(bbs, bb...)
 	}
 	if len(bbs) == 0 {
