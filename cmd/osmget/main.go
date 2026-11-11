@@ -125,8 +125,8 @@ func main() {
 			retryDelay := time.Duration(retryDelaySec) * time.Second
 			for retry := 1; err != nil && retry <= retries; retry++ {
 				log.Warningf("error downloading data: %v, attempting retry %d of %d in %s\n", err, retry, retries, retryDelay)
-				result, err = request.Download()
 				time.Sleep(retryDelay)
+				result, err = request.Download()
 			}
 			if err != nil {
 				log.Fatalf("error downloading data: %v, maximum retries reached\n", err)
