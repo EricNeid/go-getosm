@@ -4,9 +4,11 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
 	"strings"
 	"time"
 
@@ -93,6 +95,10 @@ func main() {
 		getosm.SetLogLevel(logging.INFO)
 	}
 
+	// setup context, so downloads can be aborted by the user (ctrl+c)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
 	var outputFiles []string
 	for bbIndex, bb := range bboxes {
 		bbTiles, err := getosm.ReadBoundingBox(bb, tilesX, tilesY)
@@ -121,14 +127,21 @@ func main() {
 				URL:             url,
 			}
 
-			result, err := request.Download()
+			result, err := request.Download(ctx)
 			retryDelay := time.Duration(retryDelaySec) * time.Second
-			for retry := 1; err != nil && retry <= retries; retry++ {
+			for retry := 1; err != nil && retry <= retries && ctx.Err() == nil; retry++ {
 				log.Warningf("error downloading data: %v, attempting retry %d of %d in %s\n", err, retry, retries, retryDelay)
-				time.Sleep(retryDelay)
-				result, err = request.Download()
+				select {
+				case <-time.After(retryDelay):
+				case <-ctx.Done():
+					log.Fatalf("interrupted: %v\n", ctx.Err())
+				}
+				result, err = request.Download(ctx)
 			}
 			if err != nil {
+				if ctx.Err() != nil {
+					log.Fatalf("interrupted: %v\n", ctx.Err())
+				}
 				log.Fatalf("error downloading data: %v, maximum retries reached\n", err)
 			}
 

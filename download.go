@@ -4,6 +4,7 @@
 package gogetosm
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -40,14 +41,14 @@ func FormatQuery(bb BoundingBox, timeout, elementLimit int) string {
 	`, timeout, elementLimit, bb.North, bb.South, bb.West, bb.East)
 }
 
-// Download tile using the given request.
-func (r Request) Download() (*[]byte, error) {
+// Download tile using the given request. The given context can be used to cancel the download.
+func (r Request) Download(ctx context.Context) (*[]byte, error) {
 	Log.Debugf("download using query: %s\n", r.Query)
 	client := http.Client{
-		Timeout: 0, // no timeout
+		Timeout: 0, // no total timeout, downloads may take a long time (use context to cancel)
 	}
 
-	req, err := http.NewRequest("POST", r.URL, strings.NewReader(r.Query))
+	req, err := http.NewRequestWithContext(ctx, "POST", r.URL, strings.NewReader(r.Query))
 	if err != nil {
 		return nil, err
 	}
