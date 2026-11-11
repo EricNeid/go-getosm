@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 ### Added
 * Allow aborting downloads with ctrl+c
+* Validate bounding box orientation (west smaller than east, south smaller than north) and number of tiles in ReadBoundingBox
+### Changed (Breaking)
+* Download returns []byte instead of *[]byte
 ### Fixed
 * Show error message when no bounding box is given
 * Wait the configured retry delay before re-attempting a failed download

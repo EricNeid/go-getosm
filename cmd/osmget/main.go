@@ -154,7 +154,7 @@ func run(ctx context.Context) error {
 			}
 
 			// create output
-			err = os.WriteFile(outputFile, *result, os.ModePerm)
+			err = os.WriteFile(outputFile, result, os.ModePerm)
 			if err != nil {
 				return fmt.Errorf("error writing data: %w, could not write file %s", err, outputFile)
 			}
