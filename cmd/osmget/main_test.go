@@ -3,7 +3,6 @@
 package main
 
 import (
-	"context"
 	"testing"
 
 	"github.com/EricNeid/go-getosm/internal/verify"
@@ -15,7 +14,7 @@ func TestRun_invalidBoundingBox_shouldReturnError(t *testing.T) {
 	bboxes = bboxesFlag{"1,2"}
 	defer func() { bboxes = origBboxes }()
 	// action
-	err := run(context.Background())
+	err := run()
 	// verify
 	verify.NotNil(t, err, "expected error")
 }

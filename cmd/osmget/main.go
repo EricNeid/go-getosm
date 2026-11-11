@@ -57,11 +57,7 @@ func main() {
 		getosm.SetLogLevel(logging.INFO)
 	}
 
-	// setup context, so downloads can be aborted by the user (ctrl+c)
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer stop()
-
-	if err := run(ctx); err != nil {
+	if err := run(); err != nil {
 		log.Fatalf("%v\n", err)
 	}
 }
@@ -106,7 +102,11 @@ func parseArguments() {
 
 // run downloads the tiles for all given bounding boxes.
 // An error is returned if a download or a file operation failed.
-func run(ctx context.Context) error {
+func run() error {
+	// setup context, so downloads can be aborted by the user (ctrl+c)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
 	var outputFiles []string
 	for bbIndex, bb := range bboxes {
 		bbTiles, err := getosm.ReadBoundingBox(bb, tilesX, tilesY)
