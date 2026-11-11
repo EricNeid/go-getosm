@@ -46,6 +46,26 @@ var (
 	userAgent          = fmt.Sprintf("OsmGet-Tool/%s", version)
 )
 
+var log = getosm.Log
+
+func main() {
+	parseArguments()
+
+	if verbose {
+		getosm.SetLogLevel(logging.DEBUG)
+	} else {
+		getosm.SetLogLevel(logging.INFO)
+	}
+
+	// setup context, so downloads can be aborted by the user (ctrl+c)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
+	if err := run(ctx); err != nil {
+		log.Fatalf("%v\n", err)
+	}
+}
+
 func parseArguments() {
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
@@ -84,27 +104,15 @@ func parseArguments() {
 	}
 }
 
-var log = getosm.Log
-
-func main() {
-	parseArguments()
-
-	if verbose {
-		getosm.SetLogLevel(logging.DEBUG)
-	} else {
-		getosm.SetLogLevel(logging.INFO)
-	}
-
-	// setup context, so downloads can be aborted by the user (ctrl+c)
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer stop()
-
+// run downloads the tiles for all given bounding boxes.
+// An error is returned if a download or a file operation failed.
+func run(ctx context.Context) error {
 	var outputFiles []string
 	for bbIndex, bb := range bboxes {
 		bbTiles, err := getosm.ReadBoundingBox(bb, tilesX, tilesY)
 		if err != nil {
 			flag.Usage()
-			os.Exit(1)
+			return fmt.Errorf("invalid bounding box %s: %w", bb, err)
 		}
 
 		log.Infof("processing bounding box %d of %d\n", bbIndex+1, len(bboxes))
@@ -134,21 +142,21 @@ func main() {
 				select {
 				case <-time.After(retryDelay):
 				case <-ctx.Done():
-					log.Fatalf("interrupted: %v\n", ctx.Err())
+					return fmt.Errorf("interrupted: %w", ctx.Err())
 				}
 				result, err = request.Download(ctx)
 			}
 			if err != nil {
 				if ctx.Err() != nil {
-					log.Fatalf("interrupted: %v\n", ctx.Err())
+					return fmt.Errorf("interrupted: %w", ctx.Err())
 				}
-				log.Fatalf("error downloading data: %v, maximum retries reached\n", err)
+				return fmt.Errorf("error downloading data: %w, maximum retries reached", err)
 			}
 
 			// create output
 			err = os.WriteFile(outputFile, *result, os.ModePerm)
 			if err != nil {
-				log.Fatalf("error writing data: %v, could not write file %s\n", err, outputFile)
+				return fmt.Errorf("error writing data: %w, could not write file %s", err, outputFile)
 			}
 			outputFiles = append(outputFiles, outputFile)
 		}
@@ -157,6 +165,7 @@ func main() {
 	log.Infof("all done\n")
 	log.Infof("files created: %s\n", strings.Join(outputFiles, ","))
 	log.Infof("bounding box: %s\n", getosm.BoundingBoxesToWkt(bboxes))
+	return nil
 }
 
 func getFileName(prefix string, bbIndex, bbCount, tileIndex, tileCount int) string {
