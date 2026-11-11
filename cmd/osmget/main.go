@@ -102,7 +102,7 @@ func main() {
 		}
 
 		log.Infof("processing bounding box %d of %d\n", bbIndex+1, len(bboxes))
-		for tileIndex, bb := range bbTiles {
+		for tileIndex, tile := range bbTiles {
 			log.Infof("downloading tiles %d of %d\n", tileIndex+1, len(bbTiles))
 
 			// output file name
@@ -116,7 +116,7 @@ func main() {
 
 			// download tile until retries are exhausted
 			request := getosm.Request{
-				Query:           getosm.FormatQuery(bb, timeout, elementLimit),
+				Query:           getosm.FormatQuery(tile, timeout, elementLimit),
 				CustomUserAgent: userAgent,
 				URL:             url,
 			}
