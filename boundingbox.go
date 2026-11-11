@@ -13,6 +13,9 @@ import (
 // ErrorInvalidBB indicates that the given bounding box string is not valid.
 var ErrorInvalidBB = errors.New("invalid bounding box given")
 
+// ErrorInvalidTiling indicates that the given number of tiles is not valid.
+var ErrorInvalidTiling = errors.New("invalid number of tiles given")
+
 // BoundingBox is a wrapper for geographic bounding box.
 type BoundingBox struct {
 	West, South, East, North float64
@@ -44,6 +47,19 @@ func ReadBoundingBox(bbString string, tilesX, tilesY int) (bbs []BoundingBox, er
 	n, err := strconv.ParseFloat(bbStrParts[3], 64)
 	if err != nil {
 		Log.Errorf("could not parse north %s\n", bbStrParts[3])
+		return bbs, ErrorInvalidBB
+	}
+
+	if tilesX < 1 || tilesY < 1 {
+		Log.Errorf("invalid number of tiles given, must be >= 1")
+		return bbs, ErrorInvalidTiling
+	}
+	if w >= e {
+		Log.Errorf("invalid bounding box given: west (%g) must be smaller than east (%g)", w, e)
+		return bbs, ErrorInvalidBB
+	}
+	if s >= n {
+		Log.Errorf("invalid bounding box given: south (%g) must be smaller than north (%g)", s, n)
 		return bbs, ErrorInvalidBB
 	}
 
