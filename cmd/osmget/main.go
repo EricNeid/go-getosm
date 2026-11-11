@@ -51,7 +51,7 @@ func parseArguments() {
 		flag.PrintDefaults()
 
 		fmt.Printf("  Usage  : %s -b w,s,e,n\n", os.Args[0])
-		fmt.Printf("  Example: %s -b 13.10,52.20,13.20,52.30 -t 4 -verbose\n", os.Args[0])
+		fmt.Printf("  Example: %s -b 13.10,52.20,13.20,52.30 -tx 2 -ty 2 -verbose\n", os.Args[0])
 	}
 
 	flag.Var(&bboxes, "b", "Bounding box: west,south,east,north")
@@ -68,6 +68,12 @@ func parseArguments() {
 	flag.StringVar(&url, "url", url, "Overpass API URL")
 
 	flag.Parse()
+
+	if len(bboxes) == 0 {
+		log.Errorf("no bounding box given, please specify at least one\n")
+		flag.Usage()
+		os.Exit(1)
+	}
 
 	if tilesX*tilesY < 1 {
 		log.Infof("invalid number of tiles given, must be >= 1\n")

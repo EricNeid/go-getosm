@@ -4,6 +4,8 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+### Fixed
+* Show error message when no bounding box is given
 
 ## 0.10.0 - 2026-11-06
 ### Changed
