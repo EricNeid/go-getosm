@@ -6,55 +6,44 @@ package verify
 
 import (
 	"encoding/json"
-	"fmt"
 	"math"
-	"path/filepath"
 	"reflect"
-	"runtime"
 	"testing"
 )
 
-// Assert fails the test if the condition is false.
+// Assert fails the test if the condition is false and stops its execution.
 func Assert(t *testing.T, condition bool, msg string, v ...interface{}) {
 	t.Helper()
 
 	if !condition {
-		_, file, line, _ := runtime.Caller(1)
-		fmt.Printf("%s:%d: "+msg+"\n\n", append([]interface{}{filepath.Base(file), line}, v...)...)
-		t.FailNow()
+		t.Fatalf(msg, v...)
 	}
 }
 
-// Ok fails the test if an err is not nil.
+// Ok fails the test if an err is not nil and stops its execution.
 func Ok(t *testing.T, err error) {
 	t.Helper()
 
 	if err != nil {
-		_, file, line, _ := runtime.Caller(1)
-		fmt.Printf("%s:%d: unexpected error: %s\n\n", filepath.Base(file), line, err.Error())
-		t.FailNow()
+		t.Fatalf("unexpected error: %s", err)
 	}
 }
 
-// Equals fails the test if exp is not equal to act.
+// Equals fails the test if exp is not equal to act and stops its execution.
 func Equals(t *testing.T, exp, act any) {
 	t.Helper()
 
 	if !deepEqual(exp, act) {
-		_, file, line, _ := runtime.Caller(1)
-		fmt.Printf("%s:%d:\n\n\texp: %#v\n\n\tgot: %#v\n\n", filepath.Base(file), line, exp, act)
-		t.FailNow()
+		t.Fatalf("exp: %#v\ngot: %#v", exp, act)
 	}
 }
 
-// AlmostEquals fails the test if exp is not almost equal to act.
+// AlmostEquals fails the test if exp is not almost equal to act and stops its execution.
 func AlmostEquals(t *testing.T, exp, act float64) {
 	t.Helper()
 
 	if math.Abs(exp-act) > 0.000000001 {
-		_, file, line, _ := runtime.Caller(1)
-		fmt.Printf("%s:%d:\n\n\texp: %#v\n\n\tgot: %#v\n\n", filepath.Base(file), line, exp, act)
-		t.FailNow()
+		t.Fatalf("exp: %#v\ngot: %#v", exp, act)
 	}
 }
 
@@ -71,13 +60,11 @@ func deepEqual(v1, v2 interface{}) bool {
 	return reflect.DeepEqual(x1, x2)
 }
 
-// NotNil fails if act is nil
+// NotNil fails the test if act is nil and stops its execution.
 func NotNil(t *testing.T, act interface{}, msg string) {
 	t.Helper()
 
 	if act == nil {
-		_, file, line, _ := runtime.Caller(1)
-		fmt.Printf("%s:%d: "+msg+"\n\n", filepath.Base(file), line)
-		t.FailNow()
+		t.Fatalf("%s", msg)
 	}
 }
