@@ -6,6 +6,7 @@ package verify
 
 import (
 	"encoding/json"
+	"errors"
 	"math"
 	"reflect"
 	"testing"
@@ -26,6 +27,16 @@ func Ok(t *testing.T, err error) {
 
 	if err != nil {
 		t.Fatalf("unexpected error: %s", err)
+	}
+}
+
+// ErrorIs fails the test if err does not match the expected error
+// (see errors.Is) and stops its execution.
+func ErrorIs(t *testing.T, exp, err error) {
+	t.Helper()
+
+	if !errors.Is(err, exp) {
+		t.Fatalf("exp: %v\ngot: %v", exp, err)
 	}
 }
 

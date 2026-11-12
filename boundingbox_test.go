@@ -76,7 +76,7 @@ func TestReadBoundingBox_invalidBBoxString_shouldReturnError(t *testing.T) {
 	// action
 	bbs, err := ReadBoundingBox("10,50", 1, 1)
 	// verify
-	verify.Equals(t, ErrorInvalidBB, err)
+	verify.ErrorIs(t, ErrorInvalidBB, err)
 	verify.Equals(t, 0, len(bbs))
 }
 
@@ -84,7 +84,7 @@ func TestReadBoundingBox_noTiles_shouldReturnError(t *testing.T) {
 	// action
 	bbs, err := ReadBoundingBox("10,50,11,51", 0, 1)
 	// verify
-	verify.Equals(t, ErrorInvalidTiling, err)
+	verify.ErrorIs(t, ErrorInvalidTiling, err)
 	verify.Equals(t, 0, len(bbs))
 }
 
@@ -92,7 +92,7 @@ func TestReadBoundingBox_negativeTiles_shouldReturnError(t *testing.T) {
 	// action
 	bbs, err := ReadBoundingBox("10,50,11,51", 1, -2)
 	// verify
-	verify.Equals(t, ErrorInvalidTiling, err)
+	verify.ErrorIs(t, ErrorInvalidTiling, err)
 	verify.Equals(t, 0, len(bbs))
 }
 
@@ -100,7 +100,7 @@ func TestReadBoundingBox_westNotSmallerThanEast_shouldReturnError(t *testing.T) 
 	// action
 	bbs, err := ReadBoundingBox("11,50,10,51", 1, 1)
 	// verify
-	verify.Equals(t, ErrorInvalidBB, err)
+	verify.ErrorIs(t, ErrorInvalidBB, err)
 	verify.Equals(t, 0, len(bbs))
 }
 
@@ -108,7 +108,7 @@ func TestReadBoundingBox_southNotSmallerThanNorth_shouldReturnError(t *testing.T
 	// action
 	bbs, err := ReadBoundingBox("10,51,11,50", 1, 1)
 	// verify
-	verify.Equals(t, ErrorInvalidBB, err)
+	verify.ErrorIs(t, ErrorInvalidBB, err)
 	verify.Equals(t, 0, len(bbs))
 }
 
