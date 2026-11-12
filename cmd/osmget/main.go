@@ -7,13 +7,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log/slog"
 	"os"
 	"os/signal"
 	"strings"
 	"time"
 
 	getosm "github.com/EricNeid/go-getosm"
-	"github.com/op/go-logging"
 )
 
 const (
@@ -52,13 +52,14 @@ func main() {
 	parseArguments()
 
 	if verbose {
-		getosm.SetLogLevel(logging.DEBUG)
+		getosm.SetLogLevel(slog.LevelDebug)
 	} else {
-		getosm.SetLogLevel(logging.INFO)
+		getosm.SetLogLevel(slog.LevelInfo)
 	}
 
 	if err := run(); err != nil {
-		log.Fatalf("%v\n", err)
+		log.Error(err.Error())
+		os.Exit(1)
 	}
 }
 
@@ -88,13 +89,13 @@ func parseArguments() {
 	flag.Parse()
 
 	if len(bboxes) == 0 {
-		log.Errorf("no bounding box given, please specify at least one\n")
+		log.Error("no bounding box given, please specify at least one")
 		flag.Usage()
 		os.Exit(1)
 	}
 
 	if tilesX*tilesY < 1 {
-		log.Infof("invalid number of tiles given, must be >= 1\n")
+		log.Info("invalid number of tiles given, must be >= 1")
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -115,16 +116,16 @@ func run() error {
 			return fmt.Errorf("invalid bounding box %s: %w", bb, err)
 		}
 
-		log.Infof("processing bounding box %d of %d\n", bbIndex+1, len(bboxes))
+		log.Info("processing bounding box", "current", bbIndex+1, "total", len(bboxes))
 		for tileIndex, tile := range bbTiles {
-			log.Infof("downloading tiles %d of %d\n", tileIndex+1, len(bbTiles))
+			log.Info("downloading tiles", "current", tileIndex+1, "total", len(bbTiles))
 
 			// output file name
 			outputFile := getFileName(prefix, bbIndex, len(bboxes), tileIndex, len(bbTiles))
 
 			// check if file already exists
 			if continueLastFailed && doesFileExist(outputFile) {
-				log.Infof("skipping already present tile %s\n", outputFile)
+				log.Info("skipping already present tile", "file", outputFile)
 				continue
 			}
 
@@ -138,7 +139,7 @@ func run() error {
 			result, err := request.Download(ctx)
 			retryDelay := time.Duration(retryDelaySec) * time.Second
 			for retry := 1; err != nil && retry <= retries && ctx.Err() == nil; retry++ {
-				log.Warningf("error downloading data: %v, attempting retry %d of %d in %s\n", err, retry, retries, retryDelay)
+				log.Warn("error downloading data, attempting retry", "error", err, "attempt", retry, "retries", retries, "delay", retryDelay)
 				select {
 				case <-time.After(retryDelay):
 				case <-ctx.Done():
@@ -162,9 +163,9 @@ func run() error {
 		}
 	}
 
-	log.Infof("all done\n")
-	log.Infof("files created: %s\n", strings.Join(outputFiles, ","))
-	log.Infof("bounding box: %s\n", getosm.BoundingBoxesToWkt(bboxes))
+	log.Info("all done")
+	log.Info("files created", "files", strings.Join(outputFiles, ","))
+	log.Info("bounding box", "wkt", getosm.BoundingBoxesToWkt(bboxes))
 	return nil
 }
 
@@ -182,7 +183,7 @@ func getFileName(prefix string, bbIndex, bbCount, tileIndex, tileCount int) stri
 }
 
 func doesFileExist(file string) bool {
-	log.Debugf("check if file is already present %s\n", file)
+	log.Debug("check if file is already present", "file", file)
 	stats, err := os.Stat(file)
 	if os.IsNotExist(err) {
 		return false

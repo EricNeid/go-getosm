@@ -3,13 +3,16 @@
 package gogetosm
 
 import (
-	"github.com/op/go-logging"
+	"log/slog"
 )
 
 // Log is the logger for this application.
-var Log = logging.MustGetLogger("gogetosm")
+// It uses the default format, eg:
+//
+//	2022/11/08 15:28:26 INFO hello count=3
+var Log = slog.Default()
 
 // SetLogLevel sets the log level for the application logger.
-func SetLogLevel(level logging.Level) {
-	logging.SetLevel(level, "gogetosm")
+func SetLogLevel(level slog.Level) {
+	slog.SetLogLoggerLevel(level)
 }

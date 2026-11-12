@@ -43,7 +43,7 @@ func FormatQuery(bb BoundingBox, timeout, elementLimit int) string {
 
 // Download tile using the given request. The given context can be used to cancel the download.
 func (r Request) Download(ctx context.Context) ([]byte, error) {
-	Log.Debugf("download using query: %s\n", r.Query)
+	Log.Debug("download using query", "query", r.Query)
 	client := http.Client{
 		Timeout: 0, // no total timeout, downloads may take a long time (use context to cancel)
 	}
@@ -63,15 +63,15 @@ func (r Request) Download(ctx context.Context) ([]byte, error) {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		Log.Errorf("error while reading response body %v\n", err)
+		Log.Error("error while reading response body", "error", err)
 		return nil, err
 	}
 
 	if resp.StatusCode == 200 {
-		Log.Debugf("download complete")
+		Log.Debug("download complete")
 	} else {
-		Log.Errorf("download failed with status %s\n", resp.Status)
-		Log.Errorf("response is: \n%s\n", string(body))
+		Log.Error("download failed", "status", resp.Status)
+		Log.Error("response is", "response", string(body))
 		return nil, ErrorDownload
 	}
 

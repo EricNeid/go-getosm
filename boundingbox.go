@@ -26,40 +26,40 @@ type BoundingBox struct {
 func ReadBoundingBox(bbString string, tilesX, tilesY int) (bbs []BoundingBox, err error) {
 	bbStrParts := strings.Split(bbString, ",")
 	if len(bbStrParts) != 4 {
-		Log.Errorf("invalid bounding box given: expecting w,s,e,n")
+		Log.Error("invalid bounding box given: expecting w,s,e,n")
 		return bbs, ErrorInvalidBB
 	}
 	w, err := strconv.ParseFloat(bbStrParts[0], 64)
 	if err != nil {
-		Log.Errorf("could not parse west %s\n", bbStrParts[0])
+		Log.Error("could not parse west", "value", bbStrParts[0])
 		return bbs, ErrorInvalidBB
 	}
 	s, err := strconv.ParseFloat(bbStrParts[1], 64)
 	if err != nil {
-		Log.Errorf("could not parse south %s\n", bbStrParts[1])
+		Log.Error("could not parse south", "value", bbStrParts[1])
 		return bbs, ErrorInvalidBB
 	}
 	e, err := strconv.ParseFloat(bbStrParts[2], 64)
 	if err != nil {
-		Log.Errorf("could not parse east %s\n", bbStrParts[2])
+		Log.Error("could not parse east", "value", bbStrParts[2])
 		return bbs, ErrorInvalidBB
 	}
 	n, err := strconv.ParseFloat(bbStrParts[3], 64)
 	if err != nil {
-		Log.Errorf("could not parse north %s\n", bbStrParts[3])
+		Log.Error("could not parse north", "value", bbStrParts[3])
 		return bbs, ErrorInvalidBB
 	}
 
 	if tilesX < 1 || tilesY < 1 {
-		Log.Errorf("invalid number of tiles given, must be >= 1")
+		Log.Error("invalid number of tiles given, must be >= 1")
 		return bbs, ErrorInvalidTiling
 	}
 	if w >= e {
-		Log.Errorf("invalid bounding box given: west (%g) must be smaller than east (%g)", w, e)
+		Log.Error("invalid bounding box given: west must be smaller than east", "west", w, "east", e)
 		return bbs, ErrorInvalidBB
 	}
 	if s >= n {
-		Log.Errorf("invalid bounding box given: south (%g) must be smaller than north (%g)", s, n)
+		Log.Error("invalid bounding box given: south must be smaller than north", "south", s, "north", n)
 		return bbs, ErrorInvalidBB
 	}
 
