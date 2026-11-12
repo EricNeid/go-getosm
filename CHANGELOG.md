@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 * Show error message when no bounding box is given
 * Wait the configured retry delay before re-attempting a failed download
+* Skipped tiles were not listed in result
 
 ## 0.10.0 - 2026-11-06
 ### Changed

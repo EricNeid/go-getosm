@@ -126,6 +126,7 @@ func run() error {
 			// check if file already exists
 			if continueLastFailed && doesFileExist(outputFile) {
 				log.Info("skipping already present tile", "file", outputFile)
+				outputFiles = append(outputFiles, outputFile)
 				continue
 			}
 
